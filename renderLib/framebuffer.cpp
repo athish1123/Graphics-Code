@@ -10,6 +10,7 @@ Framebuffer::Framebuffer(int w, int h)
     fbStorage.resize(width * height);
 }
 
+
 void Framebuffer::clear(Vec3 c)
 {
     for(int index = 0; index < fbStorage.size(); index++)
@@ -17,6 +18,7 @@ void Framebuffer::clear(Vec3 c)
         fbStorage[index] = c;
     }
 }
+
 
 void Framebuffer::lerpColor(const Vec3& c1, const Vec3& c2, double t)
 {
@@ -27,13 +29,8 @@ void Framebuffer::lerpColor(const Vec3& c1, const Vec3& c2, double t)
     }
 }
 
-// void Framebuffer::lerp(int x, int y, const Vec3& c1, const Vec3& c2, double t)
-// {
-//     Vec3 c = (1-t) * c1 + t * c2;
-//     fbStorage[y * width + x] = c;
-// }
 
-void Framebuffer::transitionColor(const Vec3& c1,const  Vec3& c2)
+void Framebuffer::gradientTB(const Vec3& c1,const  Vec3& c2)
 {
     for (size_t y = 0; y < height; ++y)
         {
@@ -45,6 +42,7 @@ void Framebuffer::transitionColor(const Vec3& c1,const  Vec3& c2)
             }
         }
 }
+
 
 void Framebuffer::exportAsPNG(string filename)
 {
