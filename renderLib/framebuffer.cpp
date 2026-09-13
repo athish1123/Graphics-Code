@@ -3,6 +3,9 @@
 #include "png++/png.hpp"
 #include "color.h"
 #include <iostream>
+
+
+
 Framebuffer::Framebuffer(int w, int h)
 {
     width = w;
