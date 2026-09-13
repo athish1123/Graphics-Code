@@ -13,11 +13,13 @@ class Framebuffer {
         Framebuffer(int w, int h);
         void clear(Vec3 c);
         void exportAsPNG(string filename);
-        void lerp(int x, int y, Vec3 c1, Vec3 c2, double t);
-        void transitionColor(Vec3 c1, Vec3 c2, double t);
+        void lerp(const Vec3& c1,const Vec3& c2, double t);
+        // void lerp(int x, int y,const  Vec3& c1,const  Vec3& c2, double t);
+        void transitionColor(const Vec3& c1,const  Vec3& c2);
 
     private:
         int width, height;
+        double t;
         vector<Vec3> fbStorage;
         
 

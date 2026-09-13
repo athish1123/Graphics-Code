@@ -18,23 +18,31 @@ void Framebuffer::clear(Vec3 c)
     }
 }
 
-void Framebuffer::lerp(int x, int y, Vec3 c1, Vec3 c2, double t)
+void Framebuffer::lerpColor(const Vec3& c1, const Vec3& c2, double t)
 {
-    Vec3 c = (1-t) * c1 + t * c2;
-    fbStorage[y * width + x] = c;
+    for(int index = 0; index < fbStorage.size(); index++)
+    {
+        Vec3 c = (1-t) * c1 + t * c2;
+        fbStorage[index] = c;
+    }
 }
 
-void Framebuffer::transitionColor(Vec3 c1, Vec3 c2, double t)
+// void Framebuffer::lerp(int x, int y, const Vec3& c1, const Vec3& c2, double t)
+// {
+//     Vec3 c = (1-t) * c1 + t * c2;
+//     fbStorage[y * width + x] = c;
+// }
+
+void Framebuffer::transitionColor(const Vec3& c1,const  Vec3& c2)
 {
     for (size_t y = 0; y < height; ++y)
         {
+            t = static_cast<double>(y)/height;
             for (size_t x = 0; x < width; ++x)
             {
-                lerp(x, y, c1, c2, t);
-                // Vec3 c = (1-t) * c1 + t * c2;
-                // fbStorage[y * width + x] = c;
+                Vec3 c = (1-t) * c1 + t * c2;
+                fbStorage[y * width + x] = c = c;
             }
-            t = t + 0.1;
         }
 }
 
