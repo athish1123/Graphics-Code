@@ -23,13 +23,19 @@ void Framebuffer::clear(Vec3 c)
 }
 
 
-void Framebuffer::lerpColor(const Vec3& c1, const Vec3& c2, double t)
+// void Framebuffer::lerpColor(const Vec3& c1, const Vec3& c2, double t)
+// {
+//     for(int index = 0; index < fbStorage.size(); index++)
+//     {
+//         Vec3 c = (1-t) * c1 + t * c2;
+//         fbStorage[index] = c;
+//     }
+// }
+
+Vec3 Framebuffer::lerp(const Vec3& c1, const Vec3& c2, double t)
 {
-    for(int index = 0; index < fbStorage.size(); index++)
-    {
-        Vec3 c = (1-t) * c1 + t * c2;
-        fbStorage[index] = c;
-    }
+    Vec3 c = (1-t) * c1 + t * c2;
+    return c;
 }
 
 
@@ -41,7 +47,8 @@ void Framebuffer::gradientTB(const Vec3& c1,const  Vec3& c2)
             for (size_t x = 0; x < width; ++x)
             {
                 Vec3 c = (1-t) * c1 + t * c2;
-                fbStorage[y * width + x] = c = c;
+                // fbStorage[y * width + x] = c = c;
+                fbStorage[y * width + x] = lerp(c1,c2,t);
             }
         }
 }

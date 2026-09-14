@@ -7,7 +7,7 @@ TEST_CASE( "Simple Framebuffer Test" )
 {
     Framebuffer fb(2560, 1440);
     // fb.lerp(Vec3(0.2,0.8,0.4), Vec3(0.6,0.1,0.5), 1);
-    fb.transitionColor(Vec3(0.2,0.8,0.4), Vec3(0.6,0.1,0.5));
+    fb.gradientTB(Vec3(0.2,0.8,0.4), Vec3(0.6,0.1,0.5));
     // fb.clear(Vec3(0.5, 0.8, 1));
     fb.exportAsPNG("output.png");
 }
