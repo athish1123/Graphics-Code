@@ -14,8 +14,9 @@ class Framebuffer {
         void clear(Vec3 c);
         void exportAsPNG(string filename);
         Vec3 lerp(const Vec3& c1,const Vec3& c2, double t);
-        // void lerp(int x, int y,const  Vec3& c1,const  Vec3& c2, double t);
-        void gradientTB(const Vec3& c1,const  Vec3& c2);
+        void gradientTB(const Vec3& c1,const Vec3& c2);
+        void gradientLR(const Vec3& c1,const Vec3& c2);
+        void colorArrayTB(vector<Vec3> cArr);
 
     private:
         int width, height;
