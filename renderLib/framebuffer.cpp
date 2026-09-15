@@ -71,6 +71,11 @@ void Framebuffer::colorArrayTB(vector<Vec3> cArr)
     }
 }
 
+void Framebuffer::setPixelColor(int x, int y, const Vec3 &c)
+{
+    fbStorage[y * width + x] = c
+}
+
 
 void Framebuffer::exportAsPNG(string filename)
 {
