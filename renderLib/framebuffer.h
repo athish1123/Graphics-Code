@@ -9,7 +9,7 @@ using namespace std;
 
 class Framebuffer {
     public:
-        Framebuffer() : width(0), height(0) {}
+        Framebuffer() : imageWidth(0), imageHeight(0) {}
         Framebuffer(int w, int h);
 
         Vec3 lerp(const Vec3& c1,const Vec3& c2, double t);
@@ -20,10 +20,10 @@ class Framebuffer {
         void gradientLR(const Vec3& c1,const Vec3& c2);
         void colorArrayTB(vector<Vec3> cArr);
 
-        void setPixelColor(int x, int y, const Vec3& c);
+        void setPixelColor(int width, int height, const Vec3& c);
 
     private:
-        int width, height;
+        int imageWidth, imageHeight;
         double t;
         vector<Vec3> fbStorage;
         

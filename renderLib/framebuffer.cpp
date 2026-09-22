@@ -6,11 +6,11 @@
 
 
 
-Framebuffer::Framebuffer(int w, int h)
+Framebuffer::Framebuffer(int width, int height)
 {
-    width = w;
-    height = h;
-    fbStorage.resize(width * height);
+    imageWidth = width;
+    imageHeight = height;
+    fbStorage.resize(imageWidth * imageHeight);
 }
 
 
@@ -31,25 +31,25 @@ Vec3 Framebuffer::lerp(const Vec3& c1, const Vec3& c2, double t)
 
 void Framebuffer::gradientTB(const Vec3& c1,const  Vec3& c2)
 {
-    for (size_t y = 0; y < height; ++y)
+    for (size_t y = 0; y < imageHeight; ++y)
         {
-            t = static_cast<double>(y)/height;
-            for (size_t x = 0; x < width; ++x)
+            t = static_cast<double>(y)/imageHeight;
+            for (size_t x = 0; x < imageWidth; ++x)
             {
                 Vec3 c = (1-t) * c1 + t * c2;
-                fbStorage[y * width + x] = lerp(c1, c2, t);
+                fbStorage[y * imageWidth + x] = lerp(c1, c2, t);
             }
         }
 }
 
 void Framebuffer::gradientLR(const Vec3& c1,const  Vec3& c2)
 {
-    for (size_t y = 0; y < height; ++y)
+    for (size_t y = 0; y < imageHeight; ++y)
         {
-            for (size_t x = 0; x < width; ++x)
+            for (size_t x = 0; x < imageWidth; ++x)
             {
-                t = static_cast<double>(x)/width;
-                fbStorage[y * width + x] = lerp(c1, c2, t);
+                t = static_cast<double>(x)/imageWidth;
+                fbStorage[y * imageWidth + x] = lerp(c1, c2, t);
             }
         }
 }
@@ -57,37 +57,37 @@ void Framebuffer::gradientLR(const Vec3& c1,const  Vec3& c2)
 
 void Framebuffer::colorArrayTB(vector<Vec3> cArr)
 {
-    int h = height/cArr.size();
+    int h = imageHeight/cArr.size();
     for(size_t z = 0; z < cArr.size(); ++z)
     {
         Vec3 c = cArr[z];
         for(size_t y = z * h; y < (z+1) * h; ++y)
         {
-            for (size_t x = 0; x < width; ++x)
+            for (size_t x = 0; x < imageWidth; ++x)
             {
-                fbStorage[y * width + x] = c;
+                fbStorage[y * imageWidth + x] = c;
             }
         }   
     }
 }
 
-void Framebuffer::setPixelColor(int x, int y, const Vec3 &c)
+void Framebuffer::setPixelColor(int width, int height, const Vec3 &c)
 {
-    fbStorage[y * width + x] = c;
+    fbStorage[height * imageWidth + width] = c;
 }
 
 
 void Framebuffer::exportAsPNG(string filename)
 {
-    png::image< png::rgb_pixel > imData( width, height );
+    png::image< png::rgb_pixel > imData( imageWidth, imageHeight );
         for (size_t y = 0; y < imData.get_height(); ++y)
         {
             for (size_t x = 0; x < imData.get_width(); ++x)
             {
                 imData[y][x] = png::rgb_pixel(
-                    int(255.999 * fbStorage[y * width + x].x()),
-                    int(255.999 * fbStorage[y * width + x].y()),
-                    int(255.999 * fbStorage[y * width + x].z())
+                    int(255.999 * fbStorage[y * imageWidth + x].x()),
+                    int(255.999 * fbStorage[y * imageWidth + x].y()),
+                    int(255.999 * fbStorage[y * imageWidth + x].z())
                 );
             }
         }

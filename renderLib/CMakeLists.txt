@@ -4,6 +4,8 @@ add_library(renderlib
   color.h
   vec3.h
   ray.h
+  camera.h
+  perspective_camera.h
 )
 
 target_include_directories(renderlib
