@@ -7,3 +7,12 @@ target_compile_definitions(cs4212-util PUBLIC HAS_GLM)
 target_link_libraries(cs4212-util PRIVATE Boost::program_options)
 target_link_libraries(cs4212-util PUBLIC glm::glm)
 
+add_executable(mainCode
+  mainCode.cpp
+)
+
+target_link_libraries(mainCode PRIVATE cs4212-util)
+target_link_libraries(mainCode PRIVATE renderLib)
+target_link_libraries(mainCode PRIVATE ${Boost_PROGRAM_OPTIONS_LIBRARIES})
+target_link_libraries(mainCode PRIVATE PNG::PNG)
+target_link_libraries(mainCode PRIVATE ZLIB::ZLIB)

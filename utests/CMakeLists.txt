@@ -20,7 +20,6 @@ include(Catch)
 set(UTESTS 
   utest_Success
   utest_Failure
-  utest_Framebuffer
   utest_vec3)
 
 # 

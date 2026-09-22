@@ -1,0 +1,4 @@
+
+HOW TO RUN mainCODE.exe
+cmake --build ../buildVCPkg --config Debug
+..\buildVCPKG\src\Debug\mainCode.exe

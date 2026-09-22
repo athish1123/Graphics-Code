@@ -1,18 +1,20 @@
-add_library(renderlib
+add_library(renderLib
   framebuffer.cpp
   framebuffer.h
   color.h
   vec3.h
   ray.h
-  camera.h
-  perspective_camera.h
+  Camera/camera.cpp
+  Camera/camera.h
+  Camera/perspective_camera.cpp
+  Camera/perspective_camera.h
 )
 
-target_include_directories(renderlib
+target_include_directories(renderLib
   PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
   PRIVATE
     ${CMAKE_SOURCE_DIR}/src
 )
 
-target_link_libraries(renderlib PUBLIC PNG::PNG)
+target_link_libraries(renderLib PUBLIC PNG::PNG)
