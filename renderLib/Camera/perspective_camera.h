@@ -9,15 +9,6 @@ class PerspectiveCamera : public Camera {
         PerspectiveCamera(Vec3 cameraOrigin, Vec3 cameraViewDir, double focalLength, double imagePlaneWidth, int width, int height);
 
         void generateRay(int& width, int& height, Ray& cRay) override;
-    
-    private:
-        int imageWidth, imageHeight;
-        double leftBound, rightBound, topBound, bottomBound;
-        double U, V, W;
-        Point3 cameraOrigin;
-
-
-
 };
 
 #endif

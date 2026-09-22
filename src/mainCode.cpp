@@ -32,10 +32,10 @@ int main()
         {
             Ray r;
             p.generateRay( x, y, r );
-            // convert ray direction to a color here
+
             Vec3 dir = r.getDirection();
-            dir = normalize(dir);                          // now components are in [-1, 1]
-            Vec3 ray_dir_color = (dir + Vec3(1,1,1)) * 0.5; // remap to [0, 1]
+            dir = normalize(dir); 
+            Vec3 ray_dir_color = (dir + Vec3(1,1,1)) * 0.5;
             fb.setPixelColor(x, y, ray_dir_color);
         }
     }

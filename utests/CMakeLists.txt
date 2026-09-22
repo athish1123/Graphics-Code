@@ -20,6 +20,7 @@ include(Catch)
 set(UTESTS 
   utest_Success
   utest_Failure
+  utest_Ray
   utest_vec3)
 
 # 
