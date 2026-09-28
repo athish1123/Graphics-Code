@@ -8,9 +8,9 @@ add_library(renderLib
   Camera/camera.h
   Camera/perspective_camera.cpp
   Camera/perspective_camera.h
-  Sphere/sphere.cpp
-  Sphere/sphere.h
-  Sphere/hittable.h
+  Shape/sphere.cpp
+  Shape/sphere.h
+  Shape/hittable.h
 )
 
 target_include_directories(renderLib
