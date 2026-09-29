@@ -21,6 +21,7 @@ set(UTESTS
   utest_Success
   utest_Failure
   utest_Ray
+  utest_Sphere
   utest_vec3)
 
 # 

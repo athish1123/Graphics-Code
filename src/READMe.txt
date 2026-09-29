@@ -4,6 +4,7 @@ HOW TO RUN mainCODE.exe (make sure your in src or you can edit it to work from b
     cmake ..
     cmake --build .
     src\Debug\mainCode.exe
+    src\Debug\sphereTest.exe
 
 
 

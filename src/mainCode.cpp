@@ -20,7 +20,6 @@ int main()
     // fb.exportAsPNG("output1.png");
 
 
-
     Framebuffer fb(200,200);
     PerspectiveCamera p(Vec3(0,0,0), Vec3(5,6,2), 1.3, 2.0, fb.getImageWidth(), fb.getImageHeight());
     // PerspectiveCamera(Vec3 cameraOrigin, Vec3 cameraViewDir, double focalLength, double imagePlaneWidth, int width, int height);

@@ -11,6 +11,9 @@ add_library(renderLib
   Shape/sphere.cpp
   Shape/sphere.h
   Shape/hittable.h
+  Shape/triangle.h
+  Shape/triangle.cpp
+  Shape/hittable_list.h
 )
 
 target_include_directories(renderLib
