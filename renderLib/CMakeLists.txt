@@ -14,6 +14,9 @@ add_library(renderLib
   Shape/triangle.h
   Shape/triangle.cpp
   Shape/hittable_list.h
+  Shader/shader.h
+  Shader/lambertian_shader.h
+  Light/point_light.h
 )
 
 target_include_directories(renderLib

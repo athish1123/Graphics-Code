@@ -6,12 +6,13 @@
 #include <memory>
 #include <vector>
 
+using namespace std;
 using std::make_shared;
 using std::shared_ptr;
 
 class Hittable_list : public Hittable {
   public:
-    std::vector<shared_ptr<Hittable>> objects;
+    vector<shared_ptr<Hittable>> objects;
 
     Hittable_list() {}
     Hittable_list(shared_ptr<Hittable> object) { add(object); }
