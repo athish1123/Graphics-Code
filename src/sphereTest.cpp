@@ -9,24 +9,6 @@
 
 using namespace std;
 
-
-Vec3 ray_color_sphere(const Ray& r, Sphere& sphere)
-{
-    HitRecord hit;
-    if (sphere.intersect(r, 0.001, INFINITY, hit))
-        return 0.5 * (hit.surfaceNormal + Vec3(1, 1, 1));
-    else
-    {
-        return Vec3(0, 1, 0);
-    }
-
-
-    // Vec3 dir = r.getDirection();
-    // dir = normalize(dir); 
-    // Vec3 ray_dir_color = (dir + Vec3(1,1,1)) * 0.5;
-    // return ray_dir_color;
-}
-
 Vec3 ray_color(const Ray& r, const Hittable& world)
 {
     HitRecord hit;

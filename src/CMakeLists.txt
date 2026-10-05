@@ -27,3 +27,13 @@ target_link_libraries(sphereTest PRIVATE renderLib)
 target_link_libraries(sphereTest PRIVATE ${Boost_PROGRAM_OPTIONS_LIBRARIES})
 target_link_libraries(sphereTest PRIVATE PNG::PNG)
 target_link_libraries(sphereTest PRIVATE ZLIB::ZLIB)
+
+add_executable(lambertianShaderTest
+  lambertianShaderTest.cpp
+)
+
+target_link_libraries(lambertianShaderTest PRIVATE cs4212-util)
+target_link_libraries(lambertianShaderTest PRIVATE renderLib)
+target_link_libraries(lambertianShaderTest PRIVATE ${Boost_PROGRAM_OPTIONS_LIBRARIES})
+target_link_libraries(lambertianShaderTest PRIVATE PNG::PNG)
+target_link_libraries(lambertianShaderTest PRIVATE ZLIB::ZLIB)
