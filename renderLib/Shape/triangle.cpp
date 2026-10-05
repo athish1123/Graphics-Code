@@ -1,31 +1,53 @@
 #include "triangle.h"
+#include "color.h"
 
+#include <cmath>
+#include <memory>
+#include <utility>
+Triangle::Triangle(const Vec3& point0, const Vec3& point1, const Vec3& point2) :
+	Shape(),
+	point0(point0),
+	point1(point1),
+	point2(point2) {}
 
-bool Triangle::intersect(const Ray& ray, double t_min, double t_max, HitRecord& hit) const
-{
-    const double EPS = 1e-8;
+Triangle::Triangle(const Vec3& point0, const Vec3& point1, const Vec3& point2, std::shared_ptr<Shader> shader) :
+	Shape(std::move(shader)),
+	point0(point0),
+	point1(point1),
+	point2(point2) {}
 
-    Vec3 e1 = b - a;
-    Vec3 e2 = c - a;
-    Vec3 p = cross(ray.getDirection(), e2);
-    double det = dot(e1, p);
-    if (std::fabs(det) < EPS) return false;      // ray parallel to triangle
+bool Triangle::intersect(const Ray& ray, double t_min, double t_max, HitRecord& rec) const {
+    const double epsilon = 1e-8;
 
-    double invDet = 1.0 / det;
-    Vec3 s = ray.getOrigin() - a;
-    double u = dot(s, p) * invDet;
-    if (u < 0.0 || u > 1.0) return false;
+    Vec3 edge1 = point1 - point0;
+    Vec3 edge2 = point2 - point0;
 
-    Vec3 q = cross(s, e1);
-    double v = dot(ray.getDirection(), q) * invDet;
-    if (v < 0.0 || u + v > 1.0) return false;
+    Vec3 pvec = cross(ray.getDirection(), edge2);
+    double determinant = dot(edge1, pvec);
 
-    double t = dot(e2, q) * invDet;
-    if (t < t_min || t > t_max) return false;
+    if (std::fabs(determinant) < epsilon)
+        return false;
 
-    hit.rayHitParameter  = t;
-    hit.rayHitPoint  = ray.getOrigin() + t * ray.getDirection();
-    hit.set_face_normal(ray, normalize(cross(e1, e2)));
+    double inverse_determinant = 1.0 / determinant;
+
+    Vec3 tvec = ray.getOrigin() - point0;
+    double u = dot(tvec, pvec) * inverse_determinant;
+    if (u < 0.0 || u > 1.0)
+        return false;
+
+    Vec3 qvec = cross(tvec, edge1);
+    double v = dot(ray.getDirection(), qvec) * inverse_determinant;
+    if (v < 0.0 || u + v > 1.0)
+        return false;
+
+    double root = dot(edge2, qvec) * inverse_determinant;
+    if (root <= t_min || root >= t_max)
+        return false;
+
+    rec.t = root;
+    rec.point = ray.rayAt(rec.t);
+    rec.normal = normalize(cross(edge1, edge2));
+    rec.shader = shader;
+
     return true;
 }
-

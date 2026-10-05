@@ -10,13 +10,13 @@ add_library(renderLib
   Camera/perspective_camera.h
   Shape/sphere.cpp
   Shape/sphere.h
-  Shape/hittable.h
+  Shape/shape.h
   Shape/triangle.h
   Shape/triangle.cpp
-  Shape/hittable_list.h
+  Shape/scene.h
   Shader/shader.h
   Shader/lambertian_shader.h
-  Light/point_light.h
+  Light/light.h
 )
 
 target_include_directories(renderLib
