@@ -44,8 +44,7 @@ void PerspectiveCamera::generateRay(int &width, int &height, Ray &cRay)
 {
     U = leftBound + (rightBound - leftBound) * (static_cast<double>(width) + 0.5) / imageWidth;
     // V = topBound - (topBound - bottomBound) * (static_cast<double>(height) + 0.5) / imageHeight;
-    V = bottomBound + (topBound - bottomBound) * (static_cast<double>(height) + 0.5) / imageHeight;
-
+    V = topBound - (topBound - bottomBound) * (static_cast<double>(height) + 0.5) / imageHeight;
     Vec3 direction = U * u + V * v - W * w;
     cRay = Ray(cameraOrigin, direction);
 }

@@ -17,6 +17,8 @@ add_library(renderLib
   Shader/shader.h
   Shader/lambertian_shader.h
   Light/light.h
+  Shader/blinnphong_shader.h
+  Shader/normal_shader.h
 )
 
 target_include_directories(renderLib

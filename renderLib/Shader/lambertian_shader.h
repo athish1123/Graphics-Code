@@ -12,8 +12,7 @@
 
 class LambertianShader : public Shader {
 	public:
-		LambertianShader(const Color& albedo)
-			: Shader(), albedo(albedo) {}
+		LambertianShader(const Color& albedo) : Shader(), albedo(albedo) {}
 
 		Color render(const Vec3& point, const Vec3& normal, std::vector<std::shared_ptr<Light>> lights) const override {
 

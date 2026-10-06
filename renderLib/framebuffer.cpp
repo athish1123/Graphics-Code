@@ -2,6 +2,7 @@
 #include "framebuffer.h"
 #include "png++/png.hpp"
 #include "color.h"
+#include <algorithm>
 #include <iostream>
 
 
@@ -85,9 +86,9 @@ void Framebuffer::exportAsPNG(string filename)
             for (size_t x = 0; x < imData.get_width(); ++x)
             {
                 imData[y][x] = png::rgb_pixel(
-                    int(255.999 * fbStorage[y * imageWidth + x].x()),
-                    int(255.999 * fbStorage[y * imageWidth + x].y()),
-                    int(255.999 * fbStorage[y * imageWidth + x].z())
+                    int(255.999 * std::clamp(fbStorage[y * imageWidth + x].x(), 0.0, 1.0)),
+                    int(255.999 * std::clamp(fbStorage[y * imageWidth + x].y(), 0.0, 1.0)),
+                    int(255.999 * std::clamp(fbStorage[y * imageWidth + x].z(), 0.0, 1.0))
                 );
             }
         }

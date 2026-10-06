@@ -9,6 +9,8 @@
 #include <limits>
 
 #include "Shader/lambertian_shader.h"
+#include "Shader/blinnphong_shader.h"
+
 
 #include<iostream>
 
@@ -74,39 +76,82 @@
 //     scene.render();
 // }
 
-int main(int argc, char** argv) {
+void render_lambertian_test_scene()
+{
+        // Framebuffer framebuffer(800, 800);
 
-    Framebuffer framebuffer(800, 800);
+    // PerspectiveCamera cam(Vec3(0.0, 0.0, 0.0), Vec3(0.0, 0.0, -1.0), 1.0, 0.5, framebuffer.getImageWidth(), framebuffer.getImageHeight());
+
+    // Scene scene = Scene(make_shared<PerspectiveCamera>(cam), framebuffer);
+
+    // scene.set_background_gradient( Color::skyBlue(), Color::white() );
+
+    // Sphere sphere1 = Sphere( Vec3(0.0, 0.0, -6.0), 1.0, std::make_shared<LambertianShader>( Color::mint()) );
+    // Sphere sphere2 = Sphere( Vec3(0.5, -0.5, -5.0), 0.2, std::make_shared<LambertianShader>( Color::lavender()) );
+    // Sphere sphere3 = Sphere( Vec3(-0.5, -0.5, -4.0), 0.2, std::make_shared<LambertianShader>( Color::coral()) );
+
+    // Light light = Light( Vec3(2.0, -4.0, 2.0), Color::indigo(), 1.0 );
+    // Light light2 = Light( Vec3(-2.0, 4.0, -2.0), Color::white(), 1.0 );
+    // Light light3 = Light( Vec3(0.0, 4.0, 0.0), Color::pink(), 1.0 );
+    // Light light4 = Light( Vec3(10.0, -12.0, -20.0), Color::red(), 2.0 );
+    // Light light5 = Light( Vec3(-10.0, 12.0, -20.0), Color::yellow(), 1.0 );
+
+    // // adding shapes
+    // scene.add_shape(make_shared<Sphere>(sphere1));
+    // scene.add_shape(make_shared<Sphere>(sphere2));
+    // scene.add_shape(make_shared<Sphere>(sphere3));
+
+    // // adding lights
+    // scene.add_light(make_shared<Light>(light));
+    // scene.add_light(make_shared<Light>(light2));
+    // scene.add_light(make_shared<Light>(light3));
+    // scene.add_light(make_shared<Light>(light4));
+    // scene.add_light(make_shared<Light>(light5));
+
+    // scene.render("Lamebrsion2.png");
+	// framebuffer.exportAsPNG("meow");
+}
+
+
+void render_blinnphong_test_scene() {
+    Framebuffer framebuffer(400, 400);
 
     PerspectiveCamera cam(Vec3(0.0, 0.0, 0.0), Vec3(0.0, 0.0, -1.0), 1.0, 0.5, framebuffer.getImageWidth(), framebuffer.getImageHeight());
 
     Scene scene = Scene(make_shared<PerspectiveCamera>(cam), framebuffer);
+    scene.set_background_gradient(Color::skyBlue(), Color::white());
 
-    scene.set_background_gradient( Color::skyBlue(), Color::white() );
+    // same color, different shininess, to compare highlight tightness
+    Vec3 camPos(0.0, 0.0, 0.0);
 
-    Sphere sphere1 = Sphere( Vec3(0.0, 0.0, -6.0), 1.0, std::make_shared<LambertianShader>( Color::mint()) );
-    Sphere sphere2 = Sphere( Vec3(0.5, -0.5, -5.0), 0.2, std::make_shared<LambertianShader>( Color::lavender()) );
-    Sphere sphere3 = Sphere( Vec3(-0.5, -0.5, -4.0), 0.2, std::make_shared<LambertianShader>( Color::coral()) );
+	Sphere shiny = Sphere(Vec3(-1.2, 0.0, -6.0), 1.0, std::make_shared<BlinnPhongShader>(Color::coral(), camPos, Color::white(), 128.0));
+	// Sphere medium = Sphere(Vec3(1.2, 0.0, -6.0), 1.0, std::make_shared<BlinnPhongShader>(Color::coral(), camPos, Color::white(), 32.0));
+	Sphere sphere2 = Sphere( Vec3(1, -0.5, -5.0), 0.2, std::make_shared<LambertianShader>( Color::lavender()) );
+    Triangle tri1(Vec3(0, 0, -3), Vec3(0.5, 0, -3.5), Vec3(0, 0.5, -3), std::make_shared<BlinnPhongShader>(Color::green(), camPos, Color::white(), 500.0));    
+    Triangle tri2(Vec3(0, -0.5, -5), Vec3(0, -1, -5), Vec3(0.5, -0.5, -5.5), std::make_shared<LambertianShader>(Color::orange()));
 
-    Light light = Light( Vec3(2.0, -4.0, 2.0), Color::indigo(), 1.0 );
-    Light light2 = Light( Vec3(-2.0, 4.0, -2.0), Color::white(), 1.0 );
-    Light light3 = Light( Vec3(0.0, 4.0, 0.0), Color::pink(), 1.0 );
-    Light light4 = Light( Vec3(10.0, -12.0, -20.0), Color::red(), 2.0 );
-    Light light5 = Light( Vec3(-10.0, 12.0, -20.0), Color::yellow(), 1.0 );
 
-    // adding shapes
-    scene.add_shape(make_shared<Sphere>(sphere1));
-    scene.add_shape(make_shared<Sphere>(sphere2));
-    scene.add_shape(make_shared<Sphere>(sphere3));
+    // Light key  = Light(Vec3(3.0, 4.0, -2.0), Color::white(), 1.0);
+    Light key = Light(Vec3(4.0, 0.3, -3.2), Color::white(), 1.0);  
+    Light fill = Light(Vec3(-4.0, 2.0, -1.0), Color::skyBlue(), 0.5);
+    
 
-    // adding lights
-    scene.add_light( make_shared<Light>(light));
-    scene.add_light(make_shared<Light>(light2));
-    scene.add_light(make_shared<Light>(light3));
-    scene.add_light(make_shared<Light>(light4));
-    scene.add_light(make_shared<Light>(light5));
+    scene.add_shape(make_shared<Sphere>(shiny));
+    // scene.add_shape(make_shared<Sphere>(medium));
+	scene.add_shape(make_shared<Sphere>(sphere2));
+    // scene.add_shape(make_shared<Sphere>(matte));
+    // scene.add_shape(make_shared<Sphere>(ground));
+	scene.add_shape(make_shared<Triangle>(tri1));
+    scene.add_shape(make_shared<Triangle>(tri2));
 
-    scene.render("Lamebrsion2.png");
-	// framebuffer.exportAsPNG("meow");
+
+    scene.add_light(make_shared<Light>(key));
+    scene.add_light(make_shared<Light>(fill));
+
+    scene.render("blinnphong_test.png");
+}
+
+int main(int argc, char** argv) {
+	render_blinnphong_test_scene();
 	cout << "works";
 }
