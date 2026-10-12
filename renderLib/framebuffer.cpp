@@ -6,6 +6,10 @@
 #include <iostream>
 
 
+Framebuffer::Framebuffer()
+    : imageWidth(0), imageHeight(0)
+{
+}
 
 Framebuffer::Framebuffer(int width, int height)
 {
@@ -14,6 +18,15 @@ Framebuffer::Framebuffer(int width, int height)
     fbStorage.resize(imageWidth * imageHeight);
 }
 
+int Framebuffer::getImageWidth() const
+{
+    return imageWidth;
+}
+
+int Framebuffer::getImageHeight() const
+{
+    return imageHeight;
+}
 
 void Framebuffer::clear(Vec3 c)
 {

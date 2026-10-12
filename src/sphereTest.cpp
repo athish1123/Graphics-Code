@@ -5,7 +5,7 @@
 #include "Shape/sphere.h"
 #include "Shape/triangle.h"
 #include <cmath>
-#include "Shape/hittable_list.h"
+#include "Shape/scene.h"
 
 using namespace std;
 

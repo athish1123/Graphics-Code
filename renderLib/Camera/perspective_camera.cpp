@@ -1,6 +1,8 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include "perspective_camera.h"
+#include "vec3.h"
+#include "color.h"
 
 
 PerspectiveCamera::PerspectiveCamera(Vec3 cameraOrigin, Vec3 cameraViewDir, double focalLength, double imagePlaneWidth, int width, int height)
@@ -40,11 +42,19 @@ PerspectiveCamera::PerspectiveCamera(Vec3 cameraOrigin, Vec3 cameraViewDir, doub
 // {
 // }
 
-void PerspectiveCamera::generateRay(int &width, int &height, Ray &cRay)
+void PerspectiveCamera::generateRay(int width, int height, Ray& cRay)
 {
-    U = leftBound + (rightBound - leftBound) * (static_cast<double>(width) + 0.5) / imageWidth;
-    // V = topBound - (topBound - bottomBound) * (static_cast<double>(height) + 0.5) / imageHeight;
-    V = topBound - (topBound - bottomBound) * (static_cast<double>(height) + 0.5) / imageHeight;
+    generateRay(width, height, cRay, 0.0, 0.0);
+}
+
+void PerspectiveCamera::generateRay(int width, int height, Ray &cRay, double offsetX, double offsetY)
+{
+    double sampleX = (static_cast<double>(width) + offsetX) / imageWidth;
+    double sampleY = (static_cast<double>(height) + offsetY) / imageHeight;
+
+    U = leftBound + (rightBound - leftBound) * sampleX;
+    V = topBound - (topBound - bottomBound) * sampleY;
+
     Vec3 direction = U * u + V * v - W * w;
     cRay = Ray(cameraOrigin, direction);
 }

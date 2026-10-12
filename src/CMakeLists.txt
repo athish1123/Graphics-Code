@@ -28,12 +28,13 @@ target_link_libraries(cs4212-util PUBLIC glm::glm)
 # target_link_libraries(sphereTest PRIVATE PNG::PNG)
 # target_link_libraries(sphereTest PRIVATE ZLIB::ZLIB)
 
-add_executable(lambertianShaderTest
-  lambertianShaderTest.cpp
+add_executable(mainCode
+  # lambertianShaderTest.cpp
+  AntiAliasingTest.cpp
 )
 
-target_link_libraries(lambertianShaderTest PRIVATE cs4212-util)
-target_link_libraries(lambertianShaderTest PRIVATE renderLib)
-target_link_libraries(lambertianShaderTest PRIVATE ${Boost_PROGRAM_OPTIONS_LIBRARIES})
-target_link_libraries(lambertianShaderTest PRIVATE PNG::PNG)
-target_link_libraries(lambertianShaderTest PRIVATE ZLIB::ZLIB)
+target_link_libraries(mainCode PRIVATE cs4212-util)
+target_link_libraries(mainCode PRIVATE renderLib)
+target_link_libraries(mainCode PRIVATE ${Boost_PROGRAM_OPTIONS_LIBRARIES})
+target_link_libraries(mainCode PRIVATE PNG::PNG)
+target_link_libraries(mainCode PRIVATE ZLIB::ZLIB)

@@ -10,7 +10,7 @@ class Light {
 			const Vec3& position,
 			const Color& color = Color(1.0, 1.0, 1.0),
 			double intensity = 1.0
-		) : position(position), color(color), intensity(intensity) {}
+		);
 
 		Vec3 position;
 		Color color;

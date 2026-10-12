@@ -22,36 +22,15 @@ public:
   double operator[](int i) const { return e[i]; }
   double &operator[](int i) { return e[i]; }
 
-  Vec3 &operator+=(const Vec3 &v)
-  {
-    e[0] += v.e[0];
-    e[1] += v.e[1];
-    e[2] += v.e[2];
-    return *this;
-  }
+  Vec3 &operator+=(const Vec3 &v);
 
-  Vec3 &operator*=(const double t)
-  {
-    e[0] *= t;
-    e[1] *= t;
-    e[2] *= t;
-    return *this;
-  }
+  Vec3 &operator*=(const double t);
 
-  Vec3 &operator/=(const double t)
-  {
-    return *this *= 1 / t;
-  }
+  Vec3 &operator/=(const double t);
 
-  double length() const
-  {
-    return sqrt(length_squared());
-  }
+  double length() const;
 
-  double length_squared() const
-  {
-    return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
-  }
+  double length_squared() const;
 };
 
 // point3 is just an alias for vec3, but useful for geometric clarity in the code.

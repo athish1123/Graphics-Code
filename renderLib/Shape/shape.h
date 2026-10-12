@@ -10,8 +10,7 @@
 class Shape {
 	public:
 		Shape() : shader(std::make_shared<Shader>()) {}
-		Shape(std::shared_ptr<Shader> shader_ptr)
-			: shader(shader_ptr ? std::move(shader_ptr) : std::make_shared<Shader>()) {}
+		Shape(std::shared_ptr<Shader> shader_ptr);
 
 		virtual ~Shape() = default;
 

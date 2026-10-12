@@ -9,7 +9,7 @@ using namespace std;
 
 class Framebuffer {
     public:
-        Framebuffer() : imageWidth(0), imageHeight(0) {}
+        Framebuffer();
         Framebuffer(int imageWidth, int imageHeight);
 
         Vec3 lerp(const Vec3& c1,const Vec3& c2, double t);
@@ -22,8 +22,8 @@ class Framebuffer {
 
         void setPixelColor(int width, int height, const Vec3& c);
 
-        int getImageWidth() const { return imageWidth; }
-        int getImageHeight() const { return imageHeight; }
+        int getImageWidth() const;
+        int getImageHeight() const;
 
     private:
         int imageWidth, imageHeight;
