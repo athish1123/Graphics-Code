@@ -1,6 +1,6 @@
 #include "lambertian_shader.h"
 
-Color LambertianShader::render(const Vec3& point, const Vec3& normal, std::vector<std::shared_ptr<Light>> lights) const
+Color LambertianShader::render(const Vec3& point, const Vec3& normal, const std::vector<const Light*>& lights) const
 {
     // Render magenta if given bad data.
     if (normal.length() < 1e-12) {
@@ -9,7 +9,7 @@ Color LambertianShader::render(const Vec3& point, const Vec3& normal, std::vecto
 
     Color sum(0.0, 0.0, 0.0);
 
-    for (const std::shared_ptr<Light>& light : lights) {
+    for (const Light* light : lights) {
         if (!light) {
             continue;
         }

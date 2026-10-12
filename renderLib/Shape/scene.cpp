@@ -1,6 +1,9 @@
 #include "scene.h"
 
 #include <limits>
+#include <vector>
+#include <iostream>
+#include <omp.h>
 
 void Scene::add_shape(std::shared_ptr<Shape> shape)
 {
@@ -42,59 +45,65 @@ Color Scene::computeRayColor(Ray ray)
         }
     }
 
-    if (hit_anything) {
-        constexpr double shadowEpsilon = 0.001;
-        std::vector<std::shared_ptr<Light>> visibleLights;
-        visibleLights.reserve(lights.size());
+    if (!hit_anything) {
+        return render_background_color(ray);
+    }
 
-        for (const auto& light : lights) {
-            if (!light) {
-                continue;
-            }
+    constexpr double shadowEpsilon = 0.001;
 
-            Vec3 toLight = light->position - rec.point;
-            if (toLight.length_squared() < shadowEpsilon * shadowEpsilon) {
-                continue;
-            }
+    // Per-thread reusable buffer: no heap alloc per pixel, no shared_ptr refcount traffic.
+    thread_local std::vector<const Light*> visibleLights;
+    visibleLights.clear();
 
-            const double normalSide = dot(rec.normal, toLight);
-            const Vec3 shadowOrigin = rec.point
-                + (normalSide >= 0.0 ? shadowEpsilon : -shadowEpsilon) * normalize(rec.normal);
-            toLight = light->position - shadowOrigin;
-            const double lightDistance = toLight.length();
-            if (lightDistance <= shadowEpsilon) {
-                visibleLights.push_back(light);
-                continue;
-            }
+    for (const auto& light : lights) {
+        if (!light) {
+            continue;
+        }
 
-            const Ray shadowRay(shadowOrigin, toLight / lightDistance);
-            bool blocked = false;
-            for (const auto& shape : shapes) {
-                if (shape->intersect(shadowRay, shadowEpsilon, lightDistance - shadowEpsilon, temp_rec)) {
-                    blocked = true;
-                    break;
-                }
-            }
+        Vec3 toLight = light->position - rec.point;
+        if (toLight.length_squared() < shadowEpsilon * shadowEpsilon) {
+            continue;
+        }
 
-            if (!blocked) {
-                visibleLights.push_back(light);
+        const double normalSide = dot(rec.normal, toLight);
+        const Vec3 shadowOrigin = rec.point
+            + (normalSide >= 0.0 ? shadowEpsilon : -shadowEpsilon) * normalize(rec.normal);
+        toLight = light->position - shadowOrigin;
+        const double lightDistance = toLight.length();
+        if (lightDistance <= shadowEpsilon) {
+            visibleLights.push_back(light.get());
+            continue;
+        }
+
+        const Ray shadowRay(shadowOrigin, toLight / lightDistance);
+        bool blocked = false;
+        for (const auto& shape : shapes) {
+            if (shape->intersect(shadowRay, shadowEpsilon, lightDistance - shadowEpsilon, temp_rec)) {
+                blocked = true;
+                break;
             }
         }
 
-        return rec.shader->render(rec.point, rec.normal, visibleLights);
-    } else {
-        return render_background_color(ray);
+        if (!blocked) {
+            visibleLights.push_back(light.get());
+        }
     }
+
+    return rec.shader->render(rec.point, rec.normal, visibleLights);
 }
 
 void Scene::render(string exportName)
 {
     const int samplesPerSide = 2;
     const int totalSamples = samplesPerSide * samplesPerSide;
+    const int width = framebuffer.getImageWidth();
+    const int height = framebuffer.getImageHeight();
+
+    double t0 = omp_get_wtime();
 
     #pragma omp parallel for schedule(dynamic)
-    for (int y = 0; y < framebuffer.getImageHeight(); ++y) {
-        for (int x = 0; x < framebuffer.getImageWidth(); ++x) {
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
             Vec3 pixelColor(0.0, 0.0, 0.0);
 
             for (int py = 0; py < samplesPerSide; ++py) {
@@ -112,6 +121,8 @@ void Scene::render(string exportName)
             framebuffer.setPixelColor(x, y, pixelColor / static_cast<double>(totalSamples));
         }
     }
+
+    std::cout << "render: " << omp_get_wtime() - t0 << "s\n";
 
     framebuffer.exportAsPNG(exportName);
 }

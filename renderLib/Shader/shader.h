@@ -14,7 +14,7 @@ class Shader {
 		Shader(const Color& color) : default_color(color) {}
 		virtual ~Shader() = default;
 
-		virtual Color render(const Vec3& point, const Vec3& normal, std::vector<std::shared_ptr<Light>> lights) const;
+		virtual Color render(const Vec3& point, const Vec3& normal, const std::vector<const Light*>& lights) const;
 
 	private:
 		Color default_color;

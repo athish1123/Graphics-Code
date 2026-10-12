@@ -10,7 +10,7 @@
 int main()
 {
     constexpr int width = 800;
-    constexpr int height = 600;
+    constexpr int height = 800;
 
     Framebuffer framebuffer(width, height);
     auto camera = std::make_shared<PerspectiveCamera>(

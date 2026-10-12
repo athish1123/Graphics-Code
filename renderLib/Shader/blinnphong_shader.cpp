@@ -5,7 +5,7 @@ BlinnPhongShader::BlinnPhongShader(const Color& albedo, const Vec3& camera_pos, 
 {
 }
 
-Color BlinnPhongShader::render(const Vec3& point, const Vec3& normal, std::vector<std::shared_ptr<Light>> lights) const
+Color BlinnPhongShader::render(const Vec3& point, const Vec3& normal, const std::vector<const Light*>& lights) const
 {
     if (normal.length() < 1e-12) {
         return Shader::render(point, normal, lights);
@@ -15,7 +15,7 @@ Color BlinnPhongShader::render(const Vec3& point, const Vec3& normal, std::vecto
     Vec3 V = normalize(camera_pos - point);
     Vec3 sum = ambient * albedo;
 
-    for (const std::shared_ptr<Light>& light : lights) {
+    for (const Light* light : lights) {
         if (!light) {
             continue;
         }

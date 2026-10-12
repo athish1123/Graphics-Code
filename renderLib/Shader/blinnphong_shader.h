@@ -15,7 +15,7 @@ class BlinnPhongShader : public Shader {
 	public:
 		BlinnPhongShader(const Color& albedo, const Vec3& camera_pos, const Color& spec_color = Color::white(), double shininess = 32.0, const Color& ambient = Color(0.1, 0.1, 0.1));
 
-		Color render(const Vec3& point, const Vec3& normal, std::vector<std::shared_ptr<Light>> lights) const override;
+		Color render(const Vec3& point, const Vec3& normal, const std::vector<const Light*>& lights) const override;
 
 	private:
 		Color albedo;
