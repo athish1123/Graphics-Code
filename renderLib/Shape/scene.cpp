@@ -43,7 +43,45 @@ Color Scene::computeRayColor(Ray ray)
     }
 
     if (hit_anything) {
-        return rec.shader->render(rec.point, rec.normal, lights);
+        constexpr double shadowEpsilon = 0.001;
+        std::vector<std::shared_ptr<Light>> visibleLights;
+        visibleLights.reserve(lights.size());
+
+        for (const auto& light : lights) {
+            if (!light) {
+                continue;
+            }
+
+            Vec3 toLight = light->position - rec.point;
+            if (toLight.length_squared() < shadowEpsilon * shadowEpsilon) {
+                continue;
+            }
+
+            const double normalSide = dot(rec.normal, toLight);
+            const Vec3 shadowOrigin = rec.point
+                + (normalSide >= 0.0 ? shadowEpsilon : -shadowEpsilon) * normalize(rec.normal);
+            toLight = light->position - shadowOrigin;
+            const double lightDistance = toLight.length();
+            if (lightDistance <= shadowEpsilon) {
+                visibleLights.push_back(light);
+                continue;
+            }
+
+            const Ray shadowRay(shadowOrigin, toLight / lightDistance);
+            bool blocked = false;
+            for (const auto& shape : shapes) {
+                if (shape->intersect(shadowRay, shadowEpsilon, lightDistance - shadowEpsilon, temp_rec)) {
+                    blocked = true;
+                    break;
+                }
+            }
+
+            if (!blocked) {
+                visibleLights.push_back(light);
+            }
+        }
+
+        return rec.shader->render(rec.point, rec.normal, visibleLights);
     } else {
         return render_background_color(ray);
     }
@@ -55,8 +93,8 @@ void Scene::render(string exportName)
     const int totalSamples = samplesPerSide * samplesPerSide;
 
     #pragma omp parallel for schedule(dynamic)
-    for (int x = 0; x < framebuffer.getImageWidth(); ++x) {
-        for (int y = 0; y < framebuffer.getImageHeight(); ++y) {
+    for (int y = 0; y < framebuffer.getImageHeight(); ++y) {
+        for (int x = 0; x < framebuffer.getImageWidth(); ++x) {
             Vec3 pixelColor(0.0, 0.0, 0.0);
 
             for (int py = 0; py < samplesPerSide; ++py) {

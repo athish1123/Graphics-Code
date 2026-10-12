@@ -52,8 +52,8 @@ void PerspectiveCamera::generateRay(int width, int height, Ray &cRay, double off
     double sampleX = (static_cast<double>(width) + offsetX) / imageWidth;
     double sampleY = (static_cast<double>(height) + offsetY) / imageHeight;
 
-    U = leftBound + (rightBound - leftBound) * sampleX;
-    V = topBound - (topBound - bottomBound) * sampleY;
+    double U = leftBound + (rightBound - leftBound) * sampleX;
+    double V = topBound - (topBound - bottomBound) * sampleY;
 
     Vec3 direction = U * u + V * v - W * w;
     cRay = Ray(cameraOrigin, direction);

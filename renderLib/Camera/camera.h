@@ -14,7 +14,7 @@ class Camera{
         Point3 cameraOrigin, cameraWorldUp;
         int imageWidth, imageHeight;
         double leftBound, rightBound, topBound, bottomBound;
-        double U, V, W;
+        double W;
 };
 
 
