@@ -1,12 +1,11 @@
 #ifndef RAY_H
-
 #define RAY_H
 
 #include "vec3.h"
 
-class Ray{
-    public:
-    Ray() {}
+class Ray {
+public:
+    Ray() = default;
 
     Ray(const Point3& origin, const Vec3& direction) : rayOrigin(origin), rayDirection(direction) {}
 
@@ -15,9 +14,9 @@ class Ray{
 
     Point3 rayAt(double t) const { return rayOrigin + t * rayDirection; }
 
-    private:
-        Point3 rayOrigin;
-        Vec3 rayDirection;
+private:
+    Point3 rayOrigin;
+    Vec3 rayDirection;
 };
 
-#endif 
+#endif

@@ -1,26 +1,24 @@
 #include "triangle.h"
-#include "color.h"
-
 #include <cmath>
 #include <memory>
 #include <utility>
+
 Triangle::Triangle(const Vec3& point0, const Vec3& point1, const Vec3& point2) :
 	Shape(),
 	point0(point0),
-	point1(point1),
-	point2(point2) {}
+	edge1(point1 - point0),
+	edge2(point2 - point0),
+	normal(normalize(cross(edge1, edge2))) {}
 
 Triangle::Triangle(const Vec3& point0, const Vec3& point1, const Vec3& point2, std::shared_ptr<Shader> shader) :
 	Shape(std::move(shader)),
 	point0(point0),
-	point1(point1),
-	point2(point2) {}
+	edge1(point1 - point0),
+	edge2(point2 - point0),
+	normal(normalize(cross(edge1, edge2))) {}
 
 bool Triangle::intersect(const Ray& ray, double t_min, double t_max, HitRecord& rec) const {
     const double epsilon = 1e-8;
-
-    Vec3 edge1 = point1 - point0;
-    Vec3 edge2 = point2 - point0;
 
     Vec3 pvec = cross(ray.getDirection(), edge2);
     double determinant = dot(edge1, pvec);
@@ -46,7 +44,7 @@ bool Triangle::intersect(const Ray& ray, double t_min, double t_max, HitRecord& 
 
     rec.t = root;
     rec.point = ray.rayAt(rec.t);
-    rec.normal = normalize(cross(edge1, edge2));
+    rec.normal = normal;
     rec.shader = shader;
 
     return true;

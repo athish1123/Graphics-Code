@@ -1,12 +1,19 @@
-#define _USE_MATH_DEFINES
 #include <cmath>
+
 #include "perspective_camera.h"
 #include "vec3.h"
-#include "color.h"
 
+#include <stdexcept>
 
 PerspectiveCamera::PerspectiveCamera(Vec3 cameraOrigin, Vec3 cameraViewDir, double focalLength, double imagePlaneWidth, int width, int height)
-{ 
+{
+    if (width <= 0 || height <= 0 || !(focalLength > 0.0) || !(imagePlaneWidth > 0.0)) {
+        throw std::invalid_argument("Camera dimensions, focal length, and image plane width must be positive");
+    }
+    if (cameraViewDir.length_squared() == 0.0) {
+        throw std::invalid_argument("Camera view direction must be non-zero");
+    }
+
     imageWidth = width;
     imageHeight = height;
 
@@ -14,33 +21,27 @@ PerspectiveCamera::PerspectiveCamera(Vec3 cameraOrigin, Vec3 cameraViewDir, doub
 
     double imagePlaneHeight = imagePlaneWidth * (static_cast<double>(height) / width);
 
-    leftBound = -imagePlaneWidth / 2.0; 
-    rightBound = imagePlaneWidth / 2.0; 
+    leftBound = -imagePlaneWidth / 2.0;
+    rightBound = imagePlaneWidth / 2.0;
     topBound = imagePlaneHeight / 2.0;
     bottomBound = -imagePlaneHeight / 2.0;
-
-    // cameraOrigin = Point3(0, 0, 0);
-    // cameraViewDir   = Point3(0, 0, -1);
-    // cameraWorldUp  = Vec3(0, 1, 0);
 
     cameraWorldUp = Vec3(0, 1, 0);
 
     w = normalize(-cameraViewDir);
     W = focalLength;
-    u = normalize(cross(cameraWorldUp, w));
+    Vec3 right = cross(cameraWorldUp, w);
+    if (right.length_squared() < 1e-12) {
+        cameraWorldUp = Vec3(0, 0, 1);
+        right = cross(cameraWorldUp, w);
+    }
+    u = normalize(right);
     v = cross(w,u);
 
-    // double fovDegrees = 90.0;
-    // double fovRadians = fovDegrees * M_PI / 180.0;
-    // W = (imageHeight / 2.0) / tan(fovRadians / 2.0);
-
-    
-
+    topLeftRayDirection = leftBound * u + topBound * v - W * w;
+    pixelDeltaX = ((rightBound - leftBound) / imageWidth) * u;
+    pixelDeltaY = -((topBound - bottomBound) / imageHeight) * v;
 }
-
-// PerspectiveCamera::PerspectiveCamera(Vec3 origin, Vec3 viewDir, double FocalLength, double imagePlaneWidth, int width, int height)
-// {
-// }
 
 void PerspectiveCamera::generateRay(int width, int height, Ray& cRay)
 {
@@ -49,12 +50,8 @@ void PerspectiveCamera::generateRay(int width, int height, Ray& cRay)
 
 void PerspectiveCamera::generateRay(int width, int height, Ray &cRay, double offsetX, double offsetY)
 {
-    double sampleX = (static_cast<double>(width) + offsetX) / imageWidth;
-    double sampleY = (static_cast<double>(height) + offsetY) / imageHeight;
-
-    double U = leftBound + (rightBound - leftBound) * sampleX;
-    double V = topBound - (topBound - bottomBound) * sampleY;
-
-    Vec3 direction = U * u + V * v - W * w;
+    const Vec3 direction = topLeftRayDirection
+        + (static_cast<double>(width) + offsetX) * pixelDeltaX
+        + (static_cast<double>(height) + offsetY) * pixelDeltaY;
     cRay = Ray(cameraOrigin, direction);
 }

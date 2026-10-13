@@ -16,10 +16,9 @@ class Triangle : public Shape {
 
 	private:
 		Vec3 point0;
-		Vec3 point1;
-		Vec3 point2;
+		Vec3 edge1;
+		Vec3 edge2;
+		Vec3 normal;
 };
 
 #endif
-
-// im a fat chubby seal yummy yummy yummy 

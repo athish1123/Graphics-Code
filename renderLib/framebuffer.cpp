@@ -2,8 +2,11 @@
 #include "framebuffer.h"
 #include "png++/png.hpp"
 #include "color.h"
+
 #include <algorithm>
-#include <iostream>
+#include <cmath>
+#include <cstddef>
+#include <stdexcept>
 
 
 Framebuffer::Framebuffer()
@@ -13,9 +16,19 @@ Framebuffer::Framebuffer()
 
 Framebuffer::Framebuffer(int width, int height)
 {
+    if (width <= 0 || height <= 0) {
+        throw std::invalid_argument("Framebuffer dimensions must be positive");
+    }
+
+    const auto storageWidth = static_cast<std::size_t>(width);
+    const auto storageHeight = static_cast<std::size_t>(height);
+    if (storageWidth > fbStorage.max_size() / storageHeight) {
+        throw std::length_error("Framebuffer dimensions exceed storage capacity");
+    }
+
     imageWidth = width;
     imageHeight = height;
-    fbStorage.resize(imageWidth * imageHeight);
+    fbStorage.resize(storageWidth * storageHeight);
 }
 
 int Framebuffer::getImageWidth() const
@@ -30,10 +43,7 @@ int Framebuffer::getImageHeight() const
 
 void Framebuffer::clear(Vec3 c)
 {
-    for(int index = 0; index < fbStorage.size(); index++)
-    {
-        fbStorage[index] = c;
-    }
+    std::fill(fbStorage.begin(), fbStorage.end(), c);
 }
 
 Vec3 Framebuffer::lerp(const Vec3& c1, const Vec3& c2, double t)
@@ -45,65 +55,73 @@ Vec3 Framebuffer::lerp(const Vec3& c1, const Vec3& c2, double t)
 
 void Framebuffer::gradientTB(const Vec3& c1,const  Vec3& c2)
 {
-    for (size_t y = 0; y < imageHeight; ++y)
-        {
-            t = static_cast<double>(y)/imageHeight;
-            for (size_t x = 0; x < imageWidth; ++x)
-            {
-                Vec3 c = (1-t) * c1 + t * c2;
-                fbStorage[y * imageWidth + x] = lerp(c1, c2, t);
-            }
-        }
+    for (int y = 0; y < imageHeight; ++y) {
+        const double t = static_cast<double>(y) / imageHeight;
+        const Vec3 color = lerp(c1, c2, t);
+        const auto rowStart = fbStorage.begin() + static_cast<std::size_t>(y) * imageWidth;
+        std::fill_n(rowStart, imageWidth, color);
+    }
 }
 
 void Framebuffer::gradientLR(const Vec3& c1,const  Vec3& c2)
 {
-    for (size_t y = 0; y < imageHeight; ++y)
-        {
-            for (size_t x = 0; x < imageWidth; ++x)
-            {
-                t = static_cast<double>(x)/imageWidth;
-                fbStorage[y * imageWidth + x] = lerp(c1, c2, t);
-            }
+    for (int y = 0; y < imageHeight; ++y) {
+        const auto rowStart = static_cast<std::size_t>(y) * imageWidth;
+        for (int x = 0; x < imageWidth; ++x) {
+            const double t = static_cast<double>(x) / imageWidth;
+            fbStorage[rowStart + x] = lerp(c1, c2, t);
         }
+    }
 }
 
 
-void Framebuffer::colorArrayTB(vector<Vec3> cArr)
+void Framebuffer::colorArrayTB(std::vector<Vec3> cArr)
 {
-    int h = imageHeight/cArr.size();
-    for(size_t z = 0; z < cArr.size(); ++z)
-    {
-        Vec3 c = cArr[z];
-        for(size_t y = z * h; y < (z+1) * h; ++y)
-        {
-            for (size_t x = 0; x < imageWidth; ++x)
-            {
-                fbStorage[y * imageWidth + x] = c;
-            }
-        }   
+    if (cArr.empty()) {
+        return;
+    }
+
+    const std::size_t colorCount = cArr.size();
+    for (int y = 0; y < imageHeight; ++y) {
+        const std::size_t colorIndex =
+            static_cast<std::size_t>(y) * colorCount / static_cast<std::size_t>(imageHeight);
+        const auto rowStart = fbStorage.begin() + static_cast<std::size_t>(y) * imageWidth;
+        std::fill_n(rowStart, imageWidth, cArr[colorIndex]);
     }
 }
 
 void Framebuffer::setPixelColor(int width, int height, const Vec3 &c)
 {
-    fbStorage[height * imageWidth + width] = c;
+    if (width < 0 || width >= imageWidth || height < 0 || height >= imageHeight) {
+        throw std::out_of_range("Pixel coordinates are outside the framebuffer");
+    }
+    fbStorage[static_cast<std::size_t>(height) * imageWidth + width] = c;
 }
 
 
-void Framebuffer::exportAsPNG(string filename)
+void Framebuffer::exportAsPNG(std::string filename)
 {
-    png::image< png::rgb_pixel > imData( imageWidth, imageHeight );
-        for (size_t y = 0; y < imData.get_height(); ++y)
-        {
-            for (size_t x = 0; x < imData.get_width(); ++x)
-            {
-                imData[y][x] = png::rgb_pixel(
-                    int(255.999 * std::clamp(fbStorage[y * imageWidth + x].x(), 0.0, 1.0)),
-                    int(255.999 * std::clamp(fbStorage[y * imageWidth + x].y(), 0.0, 1.0)),
-                    int(255.999 * std::clamp(fbStorage[y * imageWidth + x].z(), 0.0, 1.0))
-                );
-            }
+    if (imageWidth <= 0 || imageHeight <= 0) {
+        throw std::logic_error("Cannot export an empty framebuffer");
+    }
+
+    png::image<png::rgb_pixel> imageData(imageWidth, imageHeight);
+    const auto toByte = [](double component) {
+        if (!std::isfinite(component)) {
+            return static_cast<png::byte>(0);
         }
-        imData.write( filename );
+        return static_cast<png::byte>(255.999 * std::clamp(component, 0.0, 1.0));
+    };
+    for (int y = 0; y < imageHeight; ++y) {
+        const auto rowStart = static_cast<std::size_t>(y) * imageWidth;
+        for (int x = 0; x < imageWidth; ++x) {
+            const Vec3& color = fbStorage[rowStart + x];
+            imageData[y][x] = png::rgb_pixel(
+                toByte(color.x()),
+                toByte(color.y()),
+                toByte(color.z())
+            );
+        }
+    }
+    imageData.write(filename);
 }

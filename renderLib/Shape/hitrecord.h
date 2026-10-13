@@ -1,7 +1,7 @@
 #ifndef HITRECORD_H
 #define HITRECORD_H
 
-#include "Vec3.h"
+#include "vec3.h"
 #include "Shader/shader.h"
 
 #include <limits>

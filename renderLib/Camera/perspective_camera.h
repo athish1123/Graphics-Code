@@ -5,11 +5,15 @@
 
 class PerspectiveCamera : public Camera {
     public:
-        // PerspectiveCamera() : imageWidth(0), imageHeight(0) {};
         PerspectiveCamera(Vec3 cameraOrigin, Vec3 cameraViewDir, double focalLength, double imagePlaneWidth, int width, int height);
 
         void generateRay(int width, int height, Ray& cRay) override;
         void generateRay(int width, int height, Ray& cRay, double offsetX, double offsetY) override;
+
+    private:
+        Vec3 topLeftRayDirection;
+        Vec3 pixelDeltaX;
+        Vec3 pixelDeltaY;
 };
 
 #endif

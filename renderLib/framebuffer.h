@@ -1,24 +1,23 @@
 #ifndef FRAMEBUFFER_H
 #define FRAMEBUFFER_H
 
-#include <iostream>
+#include <string>
 #include <vector>
-#include "vec3.h"
 
-using namespace std;
+#include "vec3.h"
 
 class Framebuffer {
     public:
         Framebuffer();
         Framebuffer(int imageWidth, int imageHeight);
 
-        Vec3 lerp(const Vec3& c1,const Vec3& c2, double t);
+        Vec3 lerp(const Vec3& c1, const Vec3& c2, double t);
 
         void clear(Vec3 c);
-        void exportAsPNG(string filename);
-        void gradientTB(const Vec3& c1,const Vec3& c2);
-        void gradientLR(const Vec3& c1,const Vec3& c2);
-        void colorArrayTB(vector<Vec3> cArr);
+        void exportAsPNG(std::string filename);
+        void gradientTB(const Vec3& c1, const Vec3& c2);
+        void gradientLR(const Vec3& c1, const Vec3& c2);
+        void colorArrayTB(std::vector<Vec3> cArr);
 
         void setPixelColor(int width, int height, const Vec3& c);
 
@@ -27,9 +26,7 @@ class Framebuffer {
 
     private:
         int imageWidth, imageHeight;
-        double t;
-        vector<Vec3> fbStorage;
-        
+        std::vector<Vec3> fbStorage;
 
 };
 

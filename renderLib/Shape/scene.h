@@ -5,7 +5,7 @@
 #include "ray.h"
 #include "color.h"
 #include "../Light/light.h"
-#include "Framebuffer.h"
+#include "framebuffer.h"
 #include "../Camera/camera.h"
 #include "../Shape/hitrecord.h"
 

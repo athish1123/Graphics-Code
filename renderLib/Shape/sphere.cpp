@@ -1,24 +1,38 @@
 #include "../Shape/sphere.h"
 #include "../Shader/shader.h"
-#include "Ray.h"
+#include "ray.h"
 
 #include <cmath>
 #include <memory>
+#include <stdexcept>
 #include <utility>
 
 Sphere::Sphere(const Vec3& center, double radius) :
 	Shape(),
 	center(center),
-	radius(radius) {}
+	radius(radius)
+{
+	if (!(radius > 0.0) || !std::isfinite(radius)) {
+		throw std::invalid_argument("Sphere radius must be finite and positive");
+	}
+}
 
 Sphere::Sphere(const Vec3& center, double radius, std::shared_ptr<Shader> shader) :
 	Shape(std::move(shader)),
 	center(center),
-	radius(radius) {}
+	radius(radius)
+{
+	if (!(radius > 0.0) || !std::isfinite(radius)) {
+		throw std::invalid_argument("Sphere radius must be finite and positive");
+	}
+}
     
 bool Sphere::intersect(const Ray& ray, double t_min, double t_max, HitRecord& rec) const {
     Vec3 origin_to_center = center - ray.getOrigin();
     double a = ray.getDirection().length_squared();
+    if (a == 0.0) {
+        return false;
+    }
     double h = dot(ray.getDirection(), origin_to_center);
     double c = origin_to_center.length_squared() - radius * radius;
 

@@ -1,18 +1,15 @@
 #include "color.h"
 
+#include <algorithm>
+
 void Color::write_color(std::ostream& out, const Color& pixel_color)
 {
-    auto r = pixel_color.x();
-    auto g = pixel_color.y();
-    auto b = pixel_color.z();
-
-    // Translate the [0,1] component values to the byte range [0,255].
-    int rbyte = int(255.999 * r);
-    int gbyte = int(255.999 * g);
-    int bbyte = int(255.999 * b);
-
-    // Write out the pixel color components.
-    out << rbyte << ' ' << gbyte << ' ' << bbyte << '\n';
+    const auto toByte = [](double component) {
+        return static_cast<int>(255.999 * std::clamp(component, 0.0, 1.0));
+    };
+    out << toByte(pixel_color.x()) << ' '
+        << toByte(pixel_color.y()) << ' '
+        << toByte(pixel_color.z()) << '\n';
 }
 
 Color Color::fromVec3(Vec3 vec)

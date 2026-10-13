@@ -2,7 +2,6 @@
 
 #include <limits>
 #include <vector>
-#include <iostream>
 #include <omp.h>
 
 void Scene::add_shape(std::shared_ptr<Shape> shape)
@@ -54,6 +53,10 @@ Color Scene::computeRayColor(Ray ray)
     // Per-thread reusable buffer: no heap alloc per pixel, no shared_ptr refcount traffic.
     thread_local std::vector<const Light*> visibleLights;
     visibleLights.clear();
+    if (visibleLights.capacity() < lights.size()) {
+        visibleLights.reserve(lights.size());
+    }
+    const Vec3 unitNormal = normalize(rec.normal);
 
     for (const auto& light : lights) {
         if (!light) {
@@ -67,7 +70,7 @@ Color Scene::computeRayColor(Ray ray)
 
         const double normalSide = dot(rec.normal, toLight);
         const Vec3 shadowOrigin = rec.point
-            + (normalSide >= 0.0 ? shadowEpsilon : -shadowEpsilon) * normalize(rec.normal);
+            + (normalSide >= 0.0 ? shadowEpsilon : -shadowEpsilon) * unitNormal;
         toLight = light->position - shadowOrigin;
         const double lightDistance = toLight.length();
         if (lightDistance <= shadowEpsilon) {
@@ -94,25 +97,23 @@ Color Scene::computeRayColor(Ray ray)
 
 void Scene::render(string exportName)
 {
-    const int samplesPerSide = 2;
-    const int totalSamples = samplesPerSide * samplesPerSide;
+    constexpr int samplesPerSide = 50;
+    constexpr int totalSamples = samplesPerSide * samplesPerSide;
+    constexpr double sampleOffsets[] = {-0.25, 0.25};
     const int width = framebuffer.getImageWidth();
     const int height = framebuffer.getImageHeight();
 
     double t0 = omp_get_wtime();
 
-    #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(static)
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
             Vec3 pixelColor(0.0, 0.0, 0.0);
 
             for (int py = 0; py < samplesPerSide; ++py) {
                 for (int px = 0; px < samplesPerSide; ++px) {
-                    double offsetX = (static_cast<double>(px) + 0.5) / samplesPerSide - 0.5;
-                    double offsetY = (static_cast<double>(py) + 0.5) / samplesPerSide - 0.5;
-
                     Ray ray;
-                    cam->generateRay(x, y, ray, offsetX, offsetY);
+                    cam->generateRay(x, y, ray, sampleOffsets[px], sampleOffsets[py]);
 
                     pixelColor += computeRayColor(ray);
                 }

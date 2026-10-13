@@ -7,12 +7,17 @@ BlinnPhongShader::BlinnPhongShader(const Color& albedo, const Vec3& camera_pos, 
 
 Color BlinnPhongShader::render(const Vec3& point, const Vec3& normal, const std::vector<const Light*>& lights) const
 {
-    if (normal.length() < 1e-12) {
+    const double normalLengthSquared = normal.length_squared();
+    if (normalLengthSquared < 1e-24) {
         return Shader::render(point, normal, lights);
     }
 
-    Vec3 N = normalize(normal);
-    Vec3 V = normalize(camera_pos - point);
+    const Vec3 N = normal / std::sqrt(normalLengthSquared);
+    const Vec3 viewDirection = camera_pos - point;
+    const double viewLengthSquared = viewDirection.length_squared();
+    const Vec3 V = viewLengthSquared > 1e-24
+        ? viewDirection / std::sqrt(viewLengthSquared)
+        : Vec3();
     Vec3 sum = ambient * albedo;
 
     for (const Light* light : lights) {
@@ -21,14 +26,22 @@ Color BlinnPhongShader::render(const Vec3& point, const Vec3& normal, const std:
         }
 
         Vec3 to_light = light->position - point;
-        if (to_light.length() < 1e-12) {
+        const double lightLengthSquared = to_light.length_squared();
+        if (lightLengthSquared < 1e-24) {
             continue;
         }
 
-        Vec3 L = normalize(to_light);
-        Vec3 H = normalize(L + V);
+        const Vec3 L = to_light / std::sqrt(lightLengthSquared);
         double diff = std::max(0.0, dot(N, L));
-        double spec = diff > 0.0 ? std::pow(std::max(0.0, dot(N, H)), shininess) : 0.0;
+        double spec = 0.0;
+        if (diff > 0.0) {
+            const Vec3 halfDirection = L + V;
+            const double halfLengthSquared = halfDirection.length_squared();
+            if (halfLengthSquared > 1e-24) {
+                const double nDotH = std::max(0.0, dot(N, halfDirection / std::sqrt(halfLengthSquared)));
+                spec = std::pow(nDotH, shininess);
+            }
+        }
         Vec3 light_col = light->color * light->intensity;
         sum += light_col * albedo * diff;
         sum += light_col * spec_color * spec;

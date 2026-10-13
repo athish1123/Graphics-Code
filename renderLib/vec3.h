@@ -4,8 +4,6 @@
 #include <cmath>
 #include <iostream>
 
-using namespace std;
-
 class Vec3
 {
 public:
@@ -89,7 +87,8 @@ inline Vec3 cross(const Vec3 &u, const Vec3 &v)
 
 inline Vec3 normalize(const Vec3 &v)
 {
-  return v / v.length();
+  const double lengthSquared = v.length_squared();
+  return lengthSquared > 0.0 ? v / std::sqrt(lengthSquared) : Vec3();
 }
 
 #endif
