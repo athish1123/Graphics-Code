@@ -1,5 +1,6 @@
 #include "Camera/perspective_camera.h"
 #include "Shader/lambertian_shader.h"
+#include "Shader/mirror_shader.h"
 #include "Shape/scene.h"
 #include "Shape/sphere.h"
 #include "Shape/triangle.h"
@@ -9,8 +10,8 @@
 
 int main()
 {
-    constexpr int width = 800;
-    constexpr int height = 800;
+    constexpr int width = 2560;
+    constexpr int height = 1440;
 
     Framebuffer framebuffer(width, height);
     auto camera = std::make_shared<PerspectiveCamera>(
@@ -24,13 +25,20 @@ int main()
     Scene scene(camera, framebuffer);
     scene.set_background_gradient(Color::skyBlue(), Color::white());
 
-    auto sphereShader = std::make_shared<LambertianShader>(Color::coral());
+    auto sphereMirrorShader = std::make_shared<MirrorShader>(Color::white());
+    auto sphereLambShader = std::make_shared<LambertianShader>(Color::red());
     auto floorShader = std::make_shared<LambertianShader>(Color::grey());
 
     scene.add_shape(std::make_shared<Sphere>(
         Vec3(0.0, -0.25, -3.5),
         0.75,
-        sphereShader
+        sphereMirrorShader
+    ));
+
+    scene.add_shape(std::make_shared<Sphere>(
+        Vec3(1.5, -0.25, -3.5),
+        0.75,
+        sphereMirrorShader
     ));
 
     // Two triangles make a large horizontal floor with its normals facing up.

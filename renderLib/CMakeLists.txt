@@ -30,6 +30,7 @@ add_library(renderLib
   Light/light.h
   Shader/blinnphong_shader.h
   Shader/normal_shader.h
+  Shader/mirror_shader.cpp
 )
 
 target_include_directories(renderLib

@@ -1,4 +1,5 @@
 #include "scene.h"
+#include "../Shader/mirror_shader.h"
 
 #include <limits>
 #include <vector>
@@ -28,8 +29,10 @@ Color Scene::render_background_color(const Ray& ray) const
     return Color::fromVec3((1.0 - t) * background_bottom + t * background_top);
 }
 
-Color Scene::computeRayColor(Ray ray)
+Color Scene::computeRayColor(Ray ray, int minBounces, int maxBounces)
 {
+    constexpr double rayEpsilon = 0.001;
+
     HitRecord rec;
     HitRecord temp_rec;
     bool hit_anything = false;
@@ -47,6 +50,24 @@ Color Scene::computeRayColor(Ray ray)
 
     if (!hit_anything) {
         return render_background_color(ray);
+    }
+
+    const auto mirrorShader = std::dynamic_pointer_cast<MirrorShader>(rec.shader);
+    if (mirrorShader) {
+        if (minBounces >= maxBounces) {
+            return Color::black();
+        }
+
+        const Vec3 unitDirection = normalize(ray.getDirection());
+        const Vec3 unitNormal = normalize(rec.normal);
+        const Vec3 reflectedDirection =
+            unitDirection - 2.0 * dot(unitDirection, unitNormal) * unitNormal;
+        const Vec3 reflectedOrigin = rec.point
+            + (dot(reflectedDirection, unitNormal) >= 0.0 ? rayEpsilon : -rayEpsilon) * unitNormal;
+        const Ray reflectedRay(reflectedOrigin, reflectedDirection);
+
+        return Color::fromVec3(
+            mirrorShader->getTint() * computeRayColor(reflectedRay, minBounces + 1, maxBounces));
     }
 
     constexpr double shadowEpsilon = 0.001;

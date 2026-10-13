@@ -31,7 +31,7 @@ public:
         // this should eventually be replaced by a sky class or smth :)
         Color render_background_color(const Ray& ray) const;
 
-        Color computeRayColor(Ray ray);
+        Color computeRayColor(Ray ray, int minBounces = 0, int maxBounces = 5);
 
         void render(string exportName);
 
