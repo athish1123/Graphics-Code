@@ -29,7 +29,7 @@ target_link_libraries(cs4212-util PUBLIC glm::glm)
 # target_link_libraries(sphereTest PRIVATE ZLIB::ZLIB)
 
 add_executable(mainCode
-  mainCode.cpp
+  JsonSceneLoaderTest.cpp
 )
 
 target_link_libraries(mainCode PRIVATE cs4212-util)

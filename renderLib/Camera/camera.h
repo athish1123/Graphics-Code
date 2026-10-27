@@ -6,6 +6,8 @@
 
 class Camera{
     public:
+        std::string type;
+        
         virtual void generateRay(int width, int height, Ray& cRay) = 0;
         virtual void generateRay(int width, int height, Ray& cRay, double offsetX, double offsetY) = 0;
     

@@ -6,6 +6,8 @@
 
 class Light {
 	public:
+		std::string type;
+		
 		Light(
 			const Vec3& position,
 			const Color& color = Color(1.0, 1.0, 1.0),

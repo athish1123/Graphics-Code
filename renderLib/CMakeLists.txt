@@ -1,4 +1,5 @@
 find_package(OpenMP REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 
 add_library(renderLib
   vec3.cpp
@@ -31,6 +32,10 @@ add_library(renderLib
   Shader/blinnphong_shader.h
   Shader/normal_shader.h
   Shader/mirror_shader.cpp
+  JsonSceneLoader/SceneParser_JSON.h
+  JsonSceneLoader/SceneParser_JSON.cpp
+  JsonSceneLoader/ISceneLoader.h
+  JsonSceneLoader/SceneLoader.h
 )
 
 target_include_directories(renderLib
@@ -41,6 +46,8 @@ target_include_directories(renderLib
 )
 
 target_link_libraries(renderLib PUBLIC PNG::PNG)
+target_link_libraries(renderLib PUBLIC nlohmann_json::nlohmann_json glm::glm)
+
 
 if(OpenMP_CXX_FOUND)
   target_link_libraries(renderLib PUBLIC OpenMP::OpenMP_CXX)
