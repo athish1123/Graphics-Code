@@ -16,6 +16,7 @@ add_library(renderLib
   Camera/perspective_camera.h
   Shape/sphere.cpp
   Shape/sphere.h
+  Shape/aabb.h
   Shape/shape.cpp
   Shape/scene.cpp
   Shape/shape.h

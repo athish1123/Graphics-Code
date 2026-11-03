@@ -3,6 +3,7 @@
 
 #include "vec3.h"
 #include "ray.h"
+#include "aabb.h"
 #include "../Shape/hitrecord.h"
 #include "../Shader/shader.h"
 
@@ -15,6 +16,7 @@ class Shape {
 		virtual ~Shape() = default;
 
 		virtual bool intersect(const Ray& r, double t_min, double t_max, HitRecord& rec) const = 0;
+		virtual bool bounding_box(Aabb& bounds) const { return false; }
 
 		std::shared_ptr<Shader> shader;
 };

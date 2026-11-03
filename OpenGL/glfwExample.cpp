@@ -61,7 +61,7 @@ int main(void)
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
-    glClearColor(0.0, 0.7, 1.0, 1.0);
+    glClearColor(0.6, 0.2, 1.0, 1.0);
 
     int fb_width, fb_height;
     glfwGetFramebufferSize(window, &fb_width, &fb_height);
@@ -89,9 +89,9 @@ int main(void)
 
     // this is the actual triangle data that will be copied to                                              
     // the GPU memory                                                                                       
-    std::vector< float > host_VertexBuffer{ -0.5f, -0.5f, 0.0f,    // V0                                    
+    std::vector< float > host_VertexBuffer{ -0.5f, -0.2f, 0.0f,    // V0                                    
                                             0.5f, -0.5f, 0.0f,    // V1                                    
-                                            0.0f, 0.5f, 0.0f };   // V2                                    
+                                            0.0f, 0.5f, 0.5f };   // V2                                    
 
     int numBytes = host_VertexBuffer.size() * sizeof(float);
 

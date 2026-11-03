@@ -9,7 +9,7 @@
 #include "../Camera/camera.h"
 #include "../Shape/hitrecord.h"
 
-
+#include <cstddef>
 #include <memory>
 #include <vector>
 #include <string>
@@ -42,6 +42,42 @@ public:
         std::vector<std::shared_ptr<Light>> lights;
 
     private:
+        struct BVHEntry {
+            std::shared_ptr<Shape> shape;
+            Aabb bounds;
+            std::size_t originalIndex;
+        };
+
+        struct BVHNode {
+            Aabb bounds;
+            std::shared_ptr<BVHNode> left;
+            std::shared_ptr<BVHNode> right;
+            std::vector<BVHEntry> leafShapes;
+        };
+
+        std::shared_ptr<BVHNode> buildBVH(
+            std::vector<BVHEntry>& entries,
+            std::size_t begin,
+            std::size_t end);
+        bool intersectBVH(
+            const BVHNode* node,
+            const Ray& ray,
+            double t_min,
+            double t_max,
+            double& closest_so_far,
+            std::size_t& closest_shape_index,
+            HitRecord& rec) const;
+        bool intersectShapes(
+            const Ray& ray,
+            double t_min,
+            double t_max,
+            HitRecord& rec);
+        void rebuildBVH();
+
+        std::shared_ptr<BVHNode> bvhRoot;
+        std::vector<BVHEntry> unboundedShapes;
+        bool bvhDirty = true;
+
         Color background_top = Color::white();
         Color background_bottom = Color::skyBlue();
 };

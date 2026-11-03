@@ -1,6 +1,7 @@
 #include "triangle.h"
 #include "color.h"
 
+#include <algorithm>
 #include <cmath>
 #include <memory>
 #include <utility>
@@ -49,5 +50,19 @@ bool Triangle::intersect(const Ray& ray, double t_min, double t_max, HitRecord& 
     rec.normal = normalize(cross(edge1, edge2));
     rec.shader = shader;
 
+    return true;
+}
+
+bool Triangle::bounding_box(Aabb& bounds) const
+{
+    bounds = Aabb(
+        Vec3(
+            std::min({point0.x(), point1.x(), point2.x()}),
+            std::min({point0.y(), point1.y(), point2.y()}),
+            std::min({point0.z(), point1.z(), point2.z()})),
+        Vec3(
+            std::max({point0.x(), point1.x(), point2.x()}),
+            std::max({point0.y(), point1.y(), point2.y()}),
+            std::max({point0.z(), point1.z(), point2.z()})));
     return true;
 }

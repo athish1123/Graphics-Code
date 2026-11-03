@@ -12,6 +12,7 @@ public:
     Sphere(const Vec3& center, double radius, std::shared_ptr<Shader> shader);
 
     bool intersect(const Ray& r, double t_min, double t_max, HitRecord& rec) const override;
+    bool bounding_box(Aabb& bounds) const override;
 
 private:
     Vec3 center;

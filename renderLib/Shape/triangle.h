@@ -13,6 +13,7 @@ class Triangle : public Shape {
 		Triangle(const Vec3& point0, const Vec3& point1, const Vec3& point2, std::shared_ptr<Shader> shader);
 
 		bool intersect(const Ray& r, double t_min, double t_max, HitRecord& rec) const override;
+		bool bounding_box(Aabb& bounds) const override;
 
 	private:
 		Vec3 point0;

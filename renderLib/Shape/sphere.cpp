@@ -43,3 +43,10 @@ bool Sphere::intersect(const Ray& ray, double t_min, double t_max, HitRecord& re
 
     return true;
 }
+
+bool Sphere::bounding_box(Aabb& bounds) const
+{
+    const Vec3 radiusVector(std::abs(radius), std::abs(radius), std::abs(radius));
+    bounds = Aabb(center - radiusVector, center + radiusVector);
+    return true;
+}
