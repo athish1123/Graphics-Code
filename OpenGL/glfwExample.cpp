@@ -103,6 +103,12 @@ int main(void)
     // glm::mat4 M_ortho  = glm::ortho(left, right, bottom, top, near, far);
 
     glm::mat4 M_ortho = camera.getProjectionMatrix();
+    
+    for (int row = 0; row < 4; ++row) {
+        for (int column = 0; column < 4; ++column) {
+            std::cout << M_ortho[column][row] << (column == 3 ? '\n' : ' ');
+        }
+    }
 
     GLint major_version;
     glGetIntegerv(GL_MAJOR_VERSION, &major_version);
