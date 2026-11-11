@@ -1,4 +1,4 @@
-find_package(OpenMP REQUIRED)
+find_package(OpenMP OPTIONAL)
 find_package(nlohmann_json CONFIG REQUIRED)
 
 add_library(renderLib
