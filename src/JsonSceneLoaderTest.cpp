@@ -1,7 +1,7 @@
 #include "JsonSceneLoader/SceneLoader.h"
 #include "JsonSceneLoader/SceneParser_JSON.h"
 
-int main() {
+int main(int argc, char *argv[]) {
     constexpr int width = 500;
     constexpr int height = 500;
 
@@ -10,7 +10,8 @@ int main() {
     auto loader = std::make_shared<SceneLoader>(scene, width, height);
     SceneParser_JSON parser(loader);
 
-    parser.parseFileData("Json/scene.json");
+    // use the argv[1] for the scene
+    parser.parseFileData( argv[1] );
 
     if (!scene.cam) {
         std::cerr << "The JSON file did not create a camera.\n";
