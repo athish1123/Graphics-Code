@@ -6,7 +6,10 @@
 #include <cmath>
 #include <vector>
 #include <iostream>
-#include <omp.h>
+
+#ifdef _OPENMP
+   #include <omp.h>
+#endif
 
 void Scene::add_shape(std::shared_ptr<Shape> shape)
 {
@@ -279,7 +282,9 @@ void Scene::render(string exportName)
     const int width = framebuffer.getImageWidth();
     const int height = framebuffer.getImageHeight();
 
+#ifdef _OPENMP
     double t0 = omp_get_wtime();
+#endif
 
     #pragma omp parallel for schedule(dynamic)
     for (int y = 0; y < height; ++y) {
@@ -302,7 +307,9 @@ void Scene::render(string exportName)
         }
     }
 
+#ifdef _OPENMP
     std::cout << "render: " << omp_get_wtime() - t0 << "s\n";
+#endif
 
     framebuffer.exportAsPNG(exportName);
 }
