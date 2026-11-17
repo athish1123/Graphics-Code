@@ -1,23 +1,16 @@
 #version 410 core
 
-// out vec4 fragmentColor;
-// in float hue;
+layout(location=0) out vec4 fragmentColor;
 
-// vec3 hsvToRgb(float h)
-// {
-//    vec3 p = abs(fract(h + vec3(1.0, 2.0 / 3.0, 1.0 / 3.0)) * 6.0 - 3.0);
-//    return clamp(p - 1.0, 0.0, 1.0);
-// }
+uniform vec3 diffuseComponent;
 
-// void main()
-// {
-//    fragmentColor = vec4(hsvToRgb(hue), 1.0);
-// }
+in vec4 normal;
+in vec4 lightDir;
 
-in vec3 color;
-out vec4 fragmentColor;
-
-void main()
+void main(void)
 {
-    fragmentColor = vec4(color, 1.0);
+  float val = max(0.0, dot(normal, lightDir));
+  vec3 diffuseShading = vec3( diffuseComponent.r * val, diffuseComponent.g * val, diffuseComponent.b * val );
+
+  fragmentColor = vec4(diffuseShading, 1.0);
 }

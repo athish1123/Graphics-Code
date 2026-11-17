@@ -1,30 +1,20 @@
 #version 410 core
 
-// layout(location=0) in vec3 in_Position;
-// layout(location=1) in vec3 in_Color;
-
-// uniform mat4 projMatrix;
-// uniform mat4 viewMatrix;
-
-// out vec3 color;
-
-// void main(void)
-// {
-//  color = in_Color;
-//  gl_Position = projMatrix * viewMatrix * vec4(in_Position, 1.0);
-// }
-
-// Normal Color
 layout(location = 0) in vec3 in_Position;
-layout(location = 1) in vec3 in_Color;
+layout(location = 1) in vec3 in_Normal;
 
-out vec3 color;
+out vec4 normal;
+out vec4 lightDir;
 
-uniform mat4 projMatrix;
-uniform mat4 viewMatrix;
+uniform mat4 projMatrix, viewMatrix, modelMatrix, normalMatrix;
+uniform vec4 lightPosWorld;
 
 void main(void)
 {
-    color = in_Color;
-    gl_Position = projMatrix * viewMatrix * vec4(in_Position, 1.0);
+  normal = normalize(normalMatrix * vec4(in_Normal, 0.0));
+
+  vec4 vertexWorldPos = modelMatrix * vec4(in_Position, 1.0);
+  lightDir = normalize(lightPosWorld - vertexWorldPos);
+
+  gl_Position = projMatrix * viewMatrix * vertexWorldPos;
 }

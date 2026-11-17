@@ -46,8 +46,8 @@ int main(void)
     36.0,                         // image-plane width
     winWidth,                     // Width
     winHeight,                    // Height
-    5.0f,                         // near plane
-    -5.0f                        // far plane
+    0.1f,                         // near plane
+    100.0f                        // far plane
 );
     
     GLFWwindow* window = glfwCreateWindow(winWidth, winHeight, "GLFW Example", NULL, NULL);
@@ -100,15 +100,9 @@ int main(void)
     // float far = -5.0f;
 
 
-    // glm::mat4 M_ortho  = glm::ortho(left, right, bottom, top, near, far);
+    // glm::mat4 M_ortho  = glm::ortho(left, right, bottom, top, near, far);    
 
     glm::mat4 M_ortho = camera.getProjectionMatrix();
-    
-    for (int row = 0; row < 4; ++row) {
-        for (int column = 0; column < 4; ++column) {
-            std::cout << M_ortho[column][row] << (column == 3 ? '\n' : ' ');
-        }
-    }
 
     GLint major_version;
     glGetIntegerv(GL_MAJOR_VERSION, &major_version);
@@ -122,12 +116,11 @@ int main(void)
     glGenBuffers(1, m_triangleVBO);
     glBindBuffer(GL_ARRAY_BUFFER, m_triangleVBO[0]);
 
-    // this is the actual triangle data that will be copied to                                              
-    // the GPU memory                                                                                       
+    // Each vertex stores a position followed by its normal.
     std::vector<float> host_VertexBuffer{
-        -3.0f, -3.0f, 0.0f, 1.0f, 0.0f, 0.0f, // V0: red
-         3.0f, -3.0f, 0.0f, 0.0f, 1.0f, 1.0f, // V1: green
-         0.0f,  3.0f, 0.0f, 0.5f, 0.0f, 1.0f  // V2: blue
+        -3.0f, -3.0f, 0.0f, 0.0f, 0.0f, 1.0f, // V0
+         3.0f, -3.0f, 0.0f, 0.0f, 0.0f, 1.0f, // V1
+         0.0f,  3.0f, 0.0f, 0.0f, 0.0f, 1.0f  // V2
     };
 
     int numBytes = host_VertexBuffer.size() * sizeof(float);
@@ -148,7 +141,7 @@ int main(void)
     glGenVertexArrays(1, &m_VAO);
     glBindVertexArray(m_VAO);
 
-    // The vertex buffer stores a position followed by a color for each vertex.
+    // The vertex buffer stores a position followed by a normal for each vertex.
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, m_triangleVBO[0]);
     
@@ -167,9 +160,17 @@ int main(void)
 
     shader.createProgram();
 
-    GLuint projMatrixID, viewMatrixID;
+    GLuint projMatrixID, viewMatrixID, modelMatrixID, normalMatrixID;
+    GLuint lightPosWorldID, diffuseComponentID;
     projMatrixID = shader.createUniform("projMatrix");
     viewMatrixID = shader.createUniform( "viewMatrix" );
+    modelMatrixID = shader.createUniform("modelMatrix");
+    normalMatrixID = shader.createUniform("normalMatrix");
+    lightPosWorldID = shader.createUniform("lightPosWorld");
+    diffuseComponentID = shader.createUniform("diffuseComponent");
+
+    const glm::mat4 M_model(1.0f);
+    const glm::mat4 M_normal(1.0f);
         
     // Camera pos
     // glm::vec3 m_pos(0,0,0), m_viewDir(0,0,-1);
@@ -201,6 +202,10 @@ int main(void)
         
         glUniformMatrix4fv(projMatrixID, 1, GL_FALSE, glm::value_ptr( M_ortho  ));
         glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, glm::value_ptr( M_view  ));
+        glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, glm::value_ptr(M_model));
+        glUniformMatrix4fv(normalMatrixID, 1, GL_FALSE, glm::value_ptr(M_normal));
+        glUniform4f(lightPosWorldID, 6.0f, 4.0f, 5.0f, 1.0f);
+        glUniform3f(diffuseComponentID, 1.0f, 0.2f, 0.1f);
 
         glBindVertexArray(m_VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
