@@ -154,23 +154,29 @@ int main(void)
     // Create a shader using my GLSLObject class                                                            
     sivelab::GLSLObject shader;
     // shader.addShader( "../OpenGl/Shader/vertexShader_passthrough.glsl", sivelab::GLSLObject::VERTEX_SHADER );
-    // shader.addShader( "../OpenGl/Shader/fragmentShader_passthrough.glsl", sivelab::GLSLObject::FRAGMENT_SHADER );
+    // shader.addShader( "../OpenGl/Shader/fragmentShader_Normal.glsl", sivelab::GLSLObject::FRAGMENT_SHADER );
     shader.addShader("../OpenGL/Shader/vertexShader_withMatrixTransformation.glsl",sivelab::GLSLObject::VERTEX_SHADER);
-    shader.addShader("../OpenGL/Shader/fragmentShader_passthrough.glsl",sivelab::GLSLObject::FRAGMENT_SHADER);
+    shader.addShader("../OpenGL/Shader/fragmentShader_Lambertion.glsl",sivelab::GLSLObject::FRAGMENT_SHADER);
 
     shader.createProgram();
 
     GLuint projMatrixID, viewMatrixID, modelMatrixID, normalMatrixID;
     GLuint lightPosWorldID, diffuseComponentID;
+    GLuint specularComponentID, ambientComponentID, cameraPosWorldID, shininessID;
     projMatrixID = shader.createUniform("projMatrix");
     viewMatrixID = shader.createUniform( "viewMatrix" );
     modelMatrixID = shader.createUniform("modelMatrix");
     normalMatrixID = shader.createUniform("normalMatrix");
     lightPosWorldID = shader.createUniform("lightPosWorld");
     diffuseComponentID = shader.createUniform("diffuseComponent");
+    specularComponentID = shader.createUniform("specularComponent");
+    ambientComponentID = shader.createUniform("ambientComponent");
+    cameraPosWorldID = shader.createUniform("cameraPosWorld");
+    shininessID = shader.createUniform("shininess");
 
-    const glm::mat4 M_model(1.0f);
-    const glm::mat4 M_normal(1.0f);
+    // const glm::mat4 M_model(1.0f);
+    // const glm::mat4 M_normal(1.0f);
+    const double startTime = glfwGetTime();
         
     // Camera pos
     // glm::vec3 m_pos(0,0,0), m_viewDir(0,0,-1);
@@ -191,6 +197,12 @@ int main(void)
 
         // glm::mat4 M_view  = glm::lookAt( m_pos, m_pos - m_W, m_V );
         glm::mat4 M_view = camera.getViewMatrix();
+        const double elapsedTime = glfwGetTime() - startTime;
+        glm::mat4 M_model = glm::rotate(
+            glm::mat4(1.0f),
+            static_cast<float>(elapsedTime),
+            glm::vec3(0.0f, 0.0f, 1.0f));
+        glm::mat4 M_normal = glm::transpose(glm::inverse(M_model));
 
         /* Render your objects here */
         shader.activate();
@@ -206,6 +218,11 @@ int main(void)
         glUniformMatrix4fv(normalMatrixID, 1, GL_FALSE, glm::value_ptr(M_normal));
         glUniform4f(lightPosWorldID, 6.0f, 4.0f, 5.0f, 1.0f);
         glUniform3f(diffuseComponentID, 1.0f, 0.2f, 0.1f);
+        glUniform3f(specularComponentID, 1.0f, 1.0f, 1.0f);
+        glUniform3f(ambientComponentID, 0.1f, 0.1f, 0.1f);
+        glm::vec3 cameraPosition = camera.getPosition();
+        glUniform3f(cameraPosWorldID, cameraPosition.x, cameraPosition.y, cameraPosition.z);
+        glUniform1f(shininessID, 32.0f);
 
         glBindVertexArray(m_VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);

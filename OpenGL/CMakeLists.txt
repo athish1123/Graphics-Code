@@ -35,8 +35,14 @@ add_custom_command(TARGET glfwExample POST_BUILD
         "${CMAKE_CURRENT_SOURCE_DIR}/Shader/vertexShader_passthrough.glsl"
         "$<TARGET_FILE_DIR:glfwExample>/vertexShader_passthrough.glsl"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CMAKE_CURRENT_SOURCE_DIR}/Shader/fragmentShader_passthrough.glsl"
-        "$<TARGET_FILE_DIR:glfwExample>/fragmentShader_passthrough.glsl"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Shader/fragmentShader_Lambertion.glsl"
+        "$<TARGET_FILE_DIR:glfwExample>/fragmentShader_Lambertion.glsl"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_CURRENT_SOURCE_DIR}/Shader/fragmentShader_BlinnPhong.glsl"
+        "$<TARGET_FILE_DIR:glfwExample>/fragmentShader_BlinnPhong.glsl"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_CURRENT_SOURCE_DIR}/Shader/fragmentShader_Normal.glsl"
+        "$<TARGET_FILE_DIR:glfwExample>/fragmentShader_Normal.glsl"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_CURRENT_SOURCE_DIR}/Shader/vertexShader_withMatrixTransformation.glsl"
         "$<TARGET_FILE_DIR:glfwExample>/vertexShader_withMatrixTransformation.glsl"

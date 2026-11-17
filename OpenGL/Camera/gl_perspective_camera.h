@@ -18,6 +18,8 @@ class GLperspectiveCamera : public GLcamera {
 
         glm::mat4 getViewMatrix() const { return glm::lookAt(m_pos, m_pos - m_W, m_V); }
 
+        glm::vec3 getPosition() const { return m_pos; }
+
         glm::mat4 getProjectionMatrix();
 
         void moveForward(float d);
