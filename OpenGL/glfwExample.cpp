@@ -40,10 +40,10 @@ int main(void)
     int winHeight = 1000;
 
     GLperspectiveCamera camera(
-    glm::vec3(0.0f, 0.0f, 10.0f), // position
-    glm::vec3(0.0f, 0.0f, -1.0f), // looking toward -Z
-    50.0,                         // focal length
-    36.0,                         // image-plane width
+    glm::vec3(3.0f, 2.5f, 6.0f),
+    glm::vec3(-3.0f, -1.7f, -7.0f),
+    0.5,
+    0.5,
     winWidth,                     // Width
     winHeight,                    // Height
     0.1f,                         // near plane
@@ -75,7 +75,7 @@ int main(void)
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
-    glClearColor(0.0, 0.0, 0.0, 1.0);
+    glClearColor(0.2f, 0.25f, 0.3f, 1.0f);
 
     int fb_width, fb_height;
     glfwGetFramebufferSize(window, &fb_width, &fb_height);
@@ -111,16 +111,29 @@ int main(void)
     double timeDiff = 0.0, startFrameTime = 0.0, endFrameTime = 0.0;
     
 
-    // create a Vertex Array Buffer to hold our triangle data    
-    GLuint m_triangleVBO[1];                             
+    // create a Vertex Array Buffer to hold the four triangles
+    GLuint m_triangleVBO[1];
     glGenBuffers(1, m_triangleVBO);
     glBindBuffer(GL_ARRAY_BUFFER, m_triangleVBO[0]);
 
-    // Each vertex stores a position followed by its normal.
+    // Each vertex stores a position followed by its face normal.
     std::vector<float> host_VertexBuffer{
-        -3.0f, -3.0f, 0.0f, 0.0f, 0.0f, 1.0f, // V0
-         3.0f, -3.0f, 0.0f, 0.0f, 0.0f, 1.0f, // V1
-         0.0f,  3.0f, 0.0f, 0.0f, 0.0f, 1.0f  // V2
+        // ground1
+        -4.0f, 0.0f,  3.0f, 0.0f, 1.0f, 0.0f,
+         4.0f, 0.0f,  3.0f, 0.0f, 1.0f, 0.0f,
+         4.0f, 0.0f, -5.0f, 0.0f, 1.0f, 0.0f,
+        // ground2
+        -4.0f, 0.0f,  3.0f, 0.0f, 1.0f, 0.0f,
+         4.0f, 0.0f, -5.0f, 0.0f, 1.0f, 0.0f,
+        -4.0f, 0.0f, -5.0f, 0.0f, 1.0f, 0.0f,
+        // triThroughSphere
+        -2.6f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
+        -0.2f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
+        -1.4f, 2.5f, -1.0f, 0.0f, 0.0f, 1.0f,
+        // triStanding
+         1.4f, 0.0f,  0.5f, 0.573f, -0.095f, 0.813f,
+         2.8f, 0.0f, -0.5f, 0.573f, -0.095f, 0.813f,
+         2.4f, 1.8f,  0.0f, 0.573f, -0.095f, 0.813f
     };
 
     int numBytes = host_VertexBuffer.size() * sizeof(float);
@@ -161,13 +174,14 @@ int main(void)
     shader.createProgram();
 
     GLuint projMatrixID, viewMatrixID, modelMatrixID, normalMatrixID;
-    GLuint lightPosWorldID, diffuseComponentID;
+    GLuint lightPosWorldID, lightPosWorld2ID, diffuseComponentID;
     GLuint specularComponentID, ambientComponentID, cameraPosWorldID, shininessID;
     projMatrixID = shader.createUniform("projMatrix");
     viewMatrixID = shader.createUniform( "viewMatrix" );
     modelMatrixID = shader.createUniform("modelMatrix");
     normalMatrixID = shader.createUniform("normalMatrix");
     lightPosWorldID = shader.createUniform("lightPosWorld");
+    lightPosWorld2ID = shader.createUniform("lightPosWorld2");
     diffuseComponentID = shader.createUniform("diffuseComponent");
     specularComponentID = shader.createUniform("specularComponent");
     ambientComponentID = shader.createUniform("ambientComponent");
@@ -176,14 +190,6 @@ int main(void)
 
     // const glm::mat4 M_model(1.0f);
     // const glm::mat4 M_normal(1.0f);
-    const double startTime = glfwGetTime();
-        
-    // Camera pos
-    // glm::vec3 m_pos(0,0,0), m_viewDir(0,0,-1);
-    // glm::vec3 m_U(1,0,0), m_V(0,1,0), m_W(0,0,1);
-
-    // double timeDiff = 0.0, startFrameTime = 0.0, endFrameTime = 0.0;
-
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
@@ -197,11 +203,7 @@ int main(void)
 
         // glm::mat4 M_view  = glm::lookAt( m_pos, m_pos - m_W, m_V );
         glm::mat4 M_view = camera.getViewMatrix();
-        const double elapsedTime = glfwGetTime() - startTime;
-        glm::mat4 M_model = glm::rotate(
-            glm::mat4(1.0f),
-            static_cast<float>(elapsedTime),
-            glm::vec3(0.0f, 0.0f, 1.0f));
+        glm::mat4 M_model = glm::mat4(1.0f);
         glm::mat4 M_normal = glm::transpose(glm::inverse(M_model));
 
         /* Render your objects here */
@@ -216,8 +218,8 @@ int main(void)
         glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, glm::value_ptr( M_view  ));
         glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, glm::value_ptr(M_model));
         glUniformMatrix4fv(normalMatrixID, 1, GL_FALSE, glm::value_ptr(M_normal));
-        glUniform4f(lightPosWorldID, 6.0f, 4.0f, 5.0f, 1.0f);
-        glUniform3f(diffuseComponentID, 1.0f, 0.2f, 0.1f);
+        glUniform4f(lightPosWorldID, 5.0f, 8.0f, 6.0f, 1.0f);
+        glUniform4f(lightPosWorld2ID, -6.0f, 5.0f, 2.0f, 1.0f);
         glUniform3f(specularComponentID, 1.0f, 1.0f, 1.0f);
         glUniform3f(ambientComponentID, 0.1f, 0.1f, 0.1f);
         glm::vec3 cameraPosition = camera.getPosition();
@@ -225,7 +227,14 @@ int main(void)
         glUniform1f(shininessID, 32.0f);
 
         glBindVertexArray(m_VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glUniform3f(diffuseComponentID, 0.6f, 0.6f, 0.6f);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        glUniform3f(diffuseComponentID, 0.2f, 0.35f, 0.9f);
+        glDrawArrays(GL_TRIANGLES, 6, 3);
+
+        glUniform3f(diffuseComponentID, 0.25f, 0.8f, 0.3f);
+        glDrawArrays(GL_TRIANGLES, 9, 3);
         glBindVertexArray(0);
         
         shader.deactivate();
@@ -235,7 +244,7 @@ int main(void)
         /* Poll for and process events */
         glfwPollEvents();
 
-        float moveRatePerFrame = 0.05;
+        float moveRatePerFrame = 0.01;
 
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
             camera.moveForward(moveRatePerFrame);

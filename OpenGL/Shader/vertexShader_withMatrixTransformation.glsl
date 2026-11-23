@@ -9,6 +9,7 @@ out vec4 worldPosition;
 
 uniform mat4 projMatrix, viewMatrix, modelMatrix, normalMatrix;
 uniform vec4 lightPosWorld;
+uniform vec4 lightPosWorld2;
 
 void main(void)
 {
