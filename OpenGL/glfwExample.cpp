@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <iostream>
+#include <optional>
 #include <vector>
 
 #include <GL/glew.h>
@@ -11,6 +12,7 @@
 #include "glm/gtc/type_ptr.hpp"
 
 #include "GLSL.h"
+#include "Icosphere.h"
 #include "gl_perspective_camera.h"
 
 int CheckGLErrors(const char *s)
@@ -191,6 +193,7 @@ int main(void)
     // const glm::mat4 M_model(1.0f);
     // const glm::mat4 M_normal(1.0f);
     /* Loop until the user closes the window */
+    std::optional<Icosphere> sphere(std::in_place, 5, 0.9f);
     while (!glfwWindowShouldClose(window))
     {
         endFrameTime = glfwGetTime();
@@ -225,6 +228,18 @@ int main(void)
         glm::vec3 cameraPosition = camera.getPosition();
         glUniform3f(cameraPosWorldID, cameraPosition.x, cameraPosition.y, cameraPosition.z);
         glUniform1f(shininessID, 32.0f);
+
+        M_model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.9f, -2.5f));
+        M_normal = glm::transpose(glm::inverse(M_model));
+        glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, glm::value_ptr(M_model));
+        glUniformMatrix4fv(normalMatrixID, 1, GL_FALSE, glm::value_ptr(M_normal));
+        glUniform3f(diffuseComponentID, 0.9f, 0.55f, 0.2f);
+        sphere->draw();
+
+        M_model = glm::mat4(1.0f);
+        M_normal = glm::mat4(1.0f);
+        glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, glm::value_ptr(M_model));
+        glUniformMatrix4fv(normalMatrixID, 1, GL_FALSE, glm::value_ptr(M_normal));
 
         glBindVertexArray(m_VAO);
         glUniform3f(diffuseComponentID, 0.6f, 0.6f, 0.6f);
@@ -270,6 +285,7 @@ int main(void)
             glfwSetWindowShouldClose(window, 1);
         }
     }
+    sphere.reset();
   
     glfwTerminate();
     return 0;

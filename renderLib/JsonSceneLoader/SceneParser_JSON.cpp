@@ -218,6 +218,7 @@ void SceneParser_JSON::parseShader(const json &shader) {
 
   if (shaderDesc.type == "Lambertian" || shaderDesc.type == "Diffuse") {
     shaderDesc.diffuse = extractShaderProperty(shader, "diffuse");
+    shaderDesc.ambient = extractShaderProperty(shader, "ambient");
   }
 
   else if (shaderDesc.type == "BlinnPhong" || shaderDesc.type == "Phong") {

@@ -37,6 +37,7 @@ public:
     std::string name;
     std::string type;
     ShaderProperty diffuse;
+    ShaderProperty ambient;
     ShaderProperty specular;
     ShaderProperty normal;
     ShaderProperty emission;

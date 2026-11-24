@@ -37,3 +37,13 @@ target_link_libraries(mainCode PRIVATE renderLib)
 target_link_libraries(mainCode PRIVATE ${Boost_PROGRAM_OPTIONS_LIBRARIES})
 target_link_libraries(mainCode PRIVATE PNG::PNG)
 target_link_libraries(mainCode PRIVATE ZLIB::ZLIB)
+
+add_custom_command(TARGET mainCode POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${CMAKE_CURRENT_SOURCE_DIR}/scene.json"
+    "$<TARGET_FILE_DIR:mainCode>/scene.json"
+)
+
+set_property(TARGET mainCode PROPERTY
+  VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:mainCode>"
+)

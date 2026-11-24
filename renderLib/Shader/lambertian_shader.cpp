@@ -7,7 +7,7 @@ Color LambertianShader::render(const Vec3& point, const Vec3& normal, const std:
         return Shader::render(point, normal, lights);
     }
 
-    Color sum(0.0, 0.0, 0.0);
+    Color sum = ambient;
 
     for (const Light* light : lights) {
         if (!light) {

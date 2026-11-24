@@ -2,6 +2,7 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 
 add_executable (glfwExample
   glfwExample.cpp 
+  Icosphere.cpp Icosphere.h
   GLSL.cpp GLSL.h
   Camera/gl_perspective_camera.cpp
   Camera/gl_perspective_camera.h

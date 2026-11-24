@@ -127,6 +127,11 @@ public:
           shaderDesc.diffuse.data.x,
           shaderDesc.diffuse.data.y,
           shaderDesc.diffuse.data.z
+        ),
+        Color(
+          shaderDesc.ambient.data.x,
+          shaderDesc.ambient.data.y,
+          shaderDesc.ambient.data.z
         )
       );
       return;
